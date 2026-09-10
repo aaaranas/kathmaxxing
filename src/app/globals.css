@@ -94,6 +94,17 @@
   --alarm: #f0c2cc;
 }
 
+[data-theme="blossom"] {
+  --desk: #f8e6ee;
+  --paper: #fdf4f8;
+  --line: #e0bccd;
+  --plate: #f4c2d7;
+  --plate-strong: #eaa4c1;
+  --plate-alt: #f0dcc4;
+  /* Warmer and oranger than the pink plates, so an error still reads as one. */
+  --alarm: #f5b9a8;
+}
+
 [data-theme="mint"] {
   --desk: #ddebe4;
   --paper: #eff7f2;

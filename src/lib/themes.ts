@@ -1,11 +1,11 @@
 import type { LucideIcon } from "lucide-react";
-import { Circle, Leaf, Moon, Mountain, Sun } from "lucide-react";
+import { Circle, Flower2, Leaf, Moon, Mountain, Sun } from "lucide-react";
 
 /**
  * Themes are paper stocks. `swatch` mirrors the --paper value in globals.css
  * so the picker can preview a stock that is not currently mounted.
  */
-export type ThemeId = "light" | "graphite" | "stone" | "lilac" | "mint";
+export type ThemeId = "light" | "graphite" | "stone" | "lilac" | "blossom" | "mint";
 
 export type ThemeOption = {
   id: ThemeId;
@@ -42,6 +42,14 @@ export const THEMES: ThemeOption[] = [
     icon: Mountain,
   },
   { id: "lilac", name: "Lilac", note: "Pastel", swatch: "#f7f3fd", edge: "#c6b8e2", icon: Circle },
+  {
+    id: "blossom",
+    name: "Blossom",
+    note: "Pastel pink",
+    swatch: "#fdf4f8",
+    edge: "#e0bccd",
+    icon: Flower2,
+  },
   { id: "mint", name: "Mint", note: "Pastel", swatch: "#eff7f2", edge: "#a6c9b9", icon: Leaf },
 ];
 

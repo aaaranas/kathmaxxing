@@ -27,7 +27,7 @@ lightening the text. Each stock is chosen so `#000` clears roughly 6.5:1 contras
 dark theme is a graphite mid-tone rather than the usual near-black: black text has to stay readable
 on it.
 
-Five stocks ship: Light, Graphite (dark), Stone (neutral), Lilac and Mint (pastels).
+Six stocks ship: Light, Graphite (dark), Stone (neutral), and Lilac, Blossom and Mint (pastels).
 
 ## Getting started
 
