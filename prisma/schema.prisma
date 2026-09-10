@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// One row per value someone committed in the converter.
+/// Only the input is stored - the other three bases are pure functions of it,
+/// so recomputing them on read keeps the table impossible to desynchronise.
+model Conversion {
+  id         Int      @id @default(autoincrement())
+  inputValue String   @map("input_value")
+  inputType  String   @map("input_type")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@map("conversions")
+}

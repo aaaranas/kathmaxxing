@@ -1,0 +1,175 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+  kathmaxxing is printed, not painted.
+
+  Black is the only ink in the app, so every theme below is a choice of paper
+  stock rather than a colour scheme. Hierarchy is carried by size, weight and
+  tinted plates underneath the type - never by lightening the text. Each stock
+  is chosen so #000 clears 6.5:1 against it, which is why the dark theme is a
+  graphite mid-tone instead of the usual near-black.
+*/
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+
+  --color-desk: var(--desk);
+  --color-paper: var(--paper);
+  --color-line: var(--line);
+  --color-plate: var(--plate);
+  --color-plate-strong: var(--plate-strong);
+  --color-plate-alt: var(--plate-alt);
+  --color-alarm: var(--alarm);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+/* ---- Paper stocks ---------------------------------------------------- */
+
+:root,
+[data-theme="light"] {
+  --desk: #eef1f5;
+  --paper: #ffffff;
+  --line: #c5ccd6;
+  --plate: #bfd4f2;
+  --plate-strong: #97b9e6;
+  --plate-alt: #f5d8b0;
+  --alarm: #f3c9c4;
+}
+
+[data-theme="graphite"] {
+  --desk: #8b9198;
+  --paper: #a5abb2;
+  --line: #6d737a;
+  --plate: #c3d3e6;
+  --plate-strong: #a8c0dc;
+  --plate-alt: #dcc4a2;
+  --alarm: #e0b3ad;
+}
+
+[data-theme="stone"] {
+  --desk: #e3ded4;
+  --paper: #f0ece4;
+  --line: #bcb3a2;
+  --plate: #d6c6a6;
+  --plate-strong: #c4ae86;
+  --plate-alt: #c6d5c1;
+  --alarm: #e5c3ba;
+}
+
+[data-theme="lilac"] {
+  --desk: #ece5f8;
+  --paper: #f7f3fd;
+  --line: #c6b8e2;
+  --plate: #cbb8ec;
+  --plate-strong: #b49ee0;
+  --plate-alt: #f3c9dd;
+  --alarm: #f0c2cc;
+}
+
+[data-theme="mint"] {
+  --desk: #ddebe4;
+  --paper: #eff7f2;
+  --line: #a6c9b9;
+  --plate: #afd8c4;
+  --plate-strong: #8ec6ab;
+  --plate-alt: #f0dfa8;
+  --alarm: #edc4b6;
+}
+
+/* ---- One ink --------------------------------------------------------- */
+
+:root {
+  --radius: 0.5rem;
+  color-scheme: light;
+
+  --background: var(--desk);
+  --foreground: #000000;
+  --card: var(--paper);
+  --card-foreground: #000000;
+  --popover: var(--paper);
+  --popover-foreground: #000000;
+  --primary: var(--plate);
+  --primary-foreground: #000000;
+  --secondary: var(--desk);
+  --secondary-foreground: #000000;
+  --muted: var(--desk);
+  --muted-foreground: #000000;
+  --accent: var(--plate);
+  --accent-foreground: #000000;
+  --destructive: var(--alarm);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: #000000;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    /* The paper should meet the edge of the viewport on every stock. */
+    background-color: var(--desk);
+  }
+
+  /* One ink, no exceptions - including the places shadcn dims text by default. */
+  .text-muted-foreground,
+  ::placeholder {
+    color: #000000;
+  }
+
+  ::placeholder {
+    opacity: 0.38;
+  }
+
+  :focus-visible {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+  }
+
+  /* Digits must never reflow as their values change. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
