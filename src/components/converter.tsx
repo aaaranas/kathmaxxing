@@ -70,7 +70,9 @@ export function Converter({ value, base, onChange, onSaved }: ConverterProps) {
   const invalid = !conversion.ok && conversion.state === "invalid";
 
   return (
-    <div className="flex flex-col gap-4">
+    // On a wide screen the working goes beside the readouts rather than below
+    // them, so a change to the input and its arithmetic are in view together.
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start">
       <Card className="border-0 ring-1 ring-foreground/15">
         <CardContent className="flex flex-col gap-5">
           <fieldset className="flex flex-col">

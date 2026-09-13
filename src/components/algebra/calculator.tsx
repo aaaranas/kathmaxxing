@@ -185,8 +185,8 @@ export function Calculator() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card className="border-0 ring-1 ring-foreground/15">
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-start lg:gap-4">
+      <Card className="border-0 ring-1 ring-foreground/15 lg:col-start-1">
         <CardContent className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <label htmlFor="calculator-input" className="text-sm font-medium">
@@ -262,7 +262,7 @@ export function Calculator() {
         </CardContent>
       </Card>
 
-      <Card className="border-0 ring-1 ring-foreground/15">
+      <Card className="border-0 ring-1 ring-foreground/15 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:sticky lg:top-4">
         <CardContent>
           <Tabs defaultValue="basic" className="w-full gap-3">
             <TabsList className="grid w-full grid-cols-3 gap-1 border border-line bg-desk p-1 group-data-horizontal/tabs:h-auto">
@@ -316,7 +316,7 @@ export function Calculator() {
         </CardContent>
       </Card>
 
-      <Card className="border-0 ring-1 ring-foreground/15">
+      <Card className="border-0 ring-1 ring-foreground/15 lg:col-start-1">
         <CardHeader>
           <CardTitle>Worked out here</CardTitle>
           <CardDescription>

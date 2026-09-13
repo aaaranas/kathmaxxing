@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
 import { Workbench } from "@/components/workbench";
 
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-8 pb-4 sm:px-6">
+    <PageShell>
       <SiteHeader
         crumbs={[{ label: "Subjects", href: "/" }, { label: "Computer Science" }]}
         title="Number bases"
@@ -19,6 +20,6 @@ export default function Page() {
       />
 
       <Workbench />
-    </main>
+    </PageShell>
   );
 }

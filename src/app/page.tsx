@@ -1,19 +1,20 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SUBJECTS } from "@/lib/subjects";
 
 export default function Page() {
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-8 pb-4 sm:px-6">
+    <PageShell>
       <SiteHeader
         title="Subjects"
         description="One shelf per subject. Everything inside shows its working — the rules first, then a solution for every kind of problem, written out line by line."
       />
 
-      <div className="flex flex-col gap-4">
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
         {SUBJECTS.map((subject) => {
           const Icon = subject.icon;
           return (
@@ -63,6 +64,6 @@ export default function Page() {
           );
         })}
       </div>
-    </main>
+    </PageShell>
   );
 }

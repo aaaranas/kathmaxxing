@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Calculator, FileText } from "lucide-react";
 
+import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { ALGEBRA_LESSONS } from "@/lib/algebra";
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-8 pb-4 sm:px-6">
+    <PageShell>
       <SiteHeader
         crumbs={[{ label: "Subjects", href: "/" }, { label: "Algebra" }]}
         title="Algebra"
@@ -43,7 +44,7 @@ export default function Page() {
         />
       </Link>
 
-      <div className="flex flex-col gap-3">
+      <div className="grid gap-3 lg:grid-cols-2 lg:items-start">
         {ALGEBRA_LESSONS.map((lesson, index) => (
           <Card key={lesson.slug} className="border-0 ring-1 ring-foreground/15">
             <CardContent>
@@ -73,6 +74,6 @@ export default function Page() {
           </Card>
         ))}
       </div>
-    </main>
+    </PageShell>
   );
 }
