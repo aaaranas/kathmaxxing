@@ -1,16 +1,29 @@
 /*
  * kathmaxxing service worker.
  *
- * The converter is pure client-side arithmetic, so the whole app shell is
- * worth keeping offline. Only the history tab needs the network, and it
- * degrades to its own error state when the request fails.
+ * Every page except history is static or pure client-side arithmetic, so the
+ * whole shelf is worth keeping offline. Only the history tab needs the network,
+ * and it degrades to its own error state when the request fails.
  */
 
-const VERSION = "kathmaxxing-v1";
+const VERSION = "kathmaxxing-v2";
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 
-const PRECACHE = ["/", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png"];
+// The subject shelf and every lesson are prerendered, so an install can hold
+// the whole app rather than only the page the user happened to land on.
+const PRECACHE = [
+  "/",
+  "/computer-science",
+  "/algebra",
+  "/algebra/integer-exponents",
+  "/algebra/rational-exponents",
+  "/algebra/radicals",
+  "/algebra/factoring",
+  "/manifest.webmanifest",
+  "/icon-192.png",
+  "/icon-512.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -66,13 +79,17 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Pages come from the network when it is there, and from the shell when it
-  // is not, so an installed app still opens on a plane.
+  // is not, so an installed app still opens on a plane. Each page is cached
+  // under its own URL - storing every navigation under "/" would leave the
+  // offline home page showing whichever lesson was opened last.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(SHELL).then((cache) => cache.put("/", copy));
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(SHELL).then((cache) => cache.put(request, copy));
+          }
           return response;
         })
         .catch(() => caches.match(request).then((hit) => hit ?? caches.match("/"))),

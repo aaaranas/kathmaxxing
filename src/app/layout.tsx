@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | kathmaxxing",
   },
   description:
-    "A base converter that shows its working. Binary, octal, decimal and hexadecimal side by side, with every step written out.",
+    "Study notes that show their working. Number bases in computer science, and exponents, radicals and factoring in algebra — every problem solved line by line.",
   applicationName: "kathmaxxing",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

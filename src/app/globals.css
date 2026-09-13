@@ -152,6 +152,162 @@
     background-color: var(--desk);
   }
 
+  /*
+    ---- Fences ---------------------------------------------------------
+
+    `\left(` and `\right)` mean "make these as tall as what is between them",
+    and a typed bracket cannot do that - next to a stacked fraction it comes
+    out half the height it needs. So the brackets are drawn as the open side of
+    an ellipse outline, stretched by the flex row to the height of the
+    contents. A dot delimiter draws nothing, which is how a one-sided fence is
+    written.
+  */
+  .math-fence {
+    display: inline-flex;
+    align-items: center;
+    /* The row has no text of its own to align a baseline to. */
+    vertical-align: middle;
+  }
+
+  .math-fence-open,
+  .math-fence-close {
+    align-self: stretch;
+    width: 0.26em;
+    border: 1px solid currentColor;
+    border-radius: 100% / 50%;
+  }
+
+  .math-fence-open {
+    margin-right: 0.06em;
+    border-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .math-fence-close {
+    margin-left: 0.06em;
+    border-left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  /* Square brackets are the same shape without the curve. */
+  .math-fence-open[data-delimiter="["],
+  .math-fence-close[data-delimiter="["] {
+    border-radius: 0;
+  }
+
+  /* A bar is straight on both sides; a dot is not drawn at all. */
+  .math-fence-open[data-delimiter="|"],
+  .math-fence-close[data-delimiter="|"] {
+    width: 0;
+    border-radius: 0;
+    border-left-width: 1px;
+    border-right-width: 0;
+    border-top: 0;
+    border-bottom: 0;
+  }
+
+  .math-fence-open[data-delimiter="."],
+  .math-fence-close[data-delimiter="."] {
+    display: none;
+  }
+
+  /*
+    ---- Scripts --------------------------------------------------------
+
+    The base reset positions <sup> and <sub> with `position: relative` and a
+    half-em offset. Relative positioning does not grow the line box, so a tall
+    script - an exponent that is itself a fraction, say - hangs outside the
+    line and is cut off by the horizontal scroller the expression sits in.
+    `vertical-align` does grow the line box, so the scripts use that instead
+    and the row simply gets taller.
+  */
+  .math-sup,
+  .math-sub {
+    position: static;
+    top: auto;
+    font-size: 0.72em;
+  }
+
+  .math-sup {
+    vertical-align: super;
+  }
+
+  .math-sub {
+    vertical-align: sub;
+  }
+
+  /*
+    A power applied to a stretched bracket. Flex alignment puts the exponent's
+    box top level with the bracket's, so it rides the top of the fence however
+    tall the fence turns out to be.
+  */
+  .math-power {
+    display: inline-flex;
+    align-items: flex-start;
+    vertical-align: middle;
+  }
+
+  /*
+    The base reset gives every <sup> `position: relative; top: -0.5em`. Inside
+    the flex row that lift is pure overflow - it pushes the exponent above the
+    fence and out of the horizontal scroller the expression sits in - so the
+    alignment is handed back to flex.
+  */
+  .math-power-script {
+    position: static;
+    top: auto;
+    font-size: 0.72em;
+    line-height: 1;
+  }
+
+  /*
+    ---- Radicals -------------------------------------------------------
+
+    A radical is drawn from three pieces rather than imported from a maths
+    library: the glyph, an overbar on the radicand, and an optional index
+    tucked into the crook. The numbers are derived from Geist Mono's own
+    metrics (measured per em: ascent 1.01, descent 0.30, and the tip of U+221A
+    sitting 0.71 above the baseline), not eyeballed.
+
+    A flex row aligns the tops of its items, so the overbar - which sits at the
+    top of the radicand's box - lands exactly on the tip of the glyph when the
+    glyph's line-height is 0.71. Matching the two baselines then fixes the
+    radicand's line-height at 1.065, and leaves the whole radical sitting on
+    the baseline of the text around it.
+  */
+  .math-sqrt {
+    display: inline-flex;
+    align-items: flex-start;
+  }
+
+  .math-sqrt-sign {
+    font-size: 1.25em;
+    line-height: 0.71;
+  }
+
+  .math-sqrt-body {
+    line-height: 1.065;
+    border-top: 1px solid currentColor;
+    /* Closes the glyph's right side bearing so the bar starts at the tip. */
+    margin-left: -0.06em;
+    padding-right: 0.12em;
+    padding-left: 0.1em;
+  }
+
+  /*
+    The index sits above and left of the crook. The glyph's rising stroke
+    crosses the left half of its box a little below the tip, so the index is
+    lifted clear of it rather than tucked further in.
+  */
+  .math-sqrt-index {
+    font-size: 0.55em;
+    line-height: 1;
+    margin-right: -0.16em;
+    transform: translateY(-0.14em);
+  }
+
   /* One ink, no exceptions - including the places shadcn dims text by default. */
   .text-muted-foreground,
   ::placeholder {
