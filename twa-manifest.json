@@ -1,0 +1,53 @@
+{
+  "packageId": "app.vercel.kathmaxxing.twa",
+  "host": "kathmaxxing.vercel.app",
+  "name": "kathmaxxing",
+  "launcherName": "kathmaxxing",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#eef1f5",
+  "themeColorDark": "#eef1f5",
+  "navigationColor": "#eef1f5",
+  "navigationColorDark": "#eef1f5",
+  "navigationDividerColor": "#c5ccd6",
+  "navigationDividerColorDark": "#c5ccd6",
+  "backgroundColor": "#eef1f5",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://kathmaxxing.vercel.app/icon-512.png",
+  "maskableIconUrl": "https://kathmaxxing.vercel.app/icon-maskable-512.png",
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Computer Science",
+      "shortName": "Bases",
+      "url": "/computer-science",
+      "chosenIconUrl": "https://kathmaxxing.vercel.app/icon-192.png"
+    },
+    {
+      "name": "Algebra",
+      "shortName": "Algebra",
+      "url": "/algebra",
+      "chosenIconUrl": "https://kathmaxxing.vercel.app/icon-192.png"
+    },
+    {
+      "name": "Calculus",
+      "shortName": "Calculus",
+      "url": "/calculus",
+      "chosenIconUrl": "https://kathmaxxing.vercel.app/icon-192.png"
+    }
+  ],
+  "webManifestUrl": "https://kathmaxxing.vercel.app/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": { "enabled": false },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://kathmaxxing.vercel.app/",
+  "minSdkVersion": 23,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

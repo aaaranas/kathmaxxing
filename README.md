@@ -182,6 +182,14 @@ Writes fire once a value has held still for 900ms rather than on every keystroke
 the value already at the top of the list is collapsed — the table reads as a list of decisions
 rather than a keylog.
 
+## Android
+
+The app is an installable PWA, so Chrome's "Install app" is enough on Android.
+For a real `.apk` — sideloadable, or for Google Play — see [ANDROID.md](ANDROID.md):
+`twa-manifest.json` is the wrapper's config, and the site vouches for the app
+through `/.well-known/assetlinks.json`, which reads its fingerprint from the
+`ANDROID_CERT_FINGERPRINT` environment variable.
+
 ## Requirements
 
 Node.js 22 or newer. The Neon serverless driver uses the global `WebSocket`, which Node exposes
