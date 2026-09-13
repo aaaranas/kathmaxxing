@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Check, Eye, EyeOff, Lightbulb, TriangleAlert } from "lucide-react";
 
-import { Math, Prose } from "@/components/algebra/math";
+import { Math, Prose } from "@/components/math";
 import {
   Accordion,
   AccordionContent,
@@ -11,7 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import type { Practice, WorkedExample } from "@/lib/algebra/types";
+import type { Practice, WorkedExample } from "@/lib/lessons/types";
 
 /**
  * A solution, opened one at a time.

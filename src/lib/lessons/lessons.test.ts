@@ -1,8 +1,17 @@
 import { describe, expect, it } from "vitest";
 
 import { ALGEBRA_LESSONS, findLesson } from "@/lib/algebra";
-import { type MathNode, parseMath, splitProse } from "@/lib/algebra/notation";
-import type { Lesson } from "@/lib/algebra/types";
+import { CALCULUS_LESSONS, findCalculusLesson } from "@/lib/calculus";
+import { type MathNode, parseMath, splitProse } from "@/lib/math/notation";
+import type { Lesson } from "@/lib/lessons/types";
+
+/** Every lesson in the app, whichever subject it belongs to. */
+const SHELVES = [
+  { subject: "algebra", lessons: ALGEBRA_LESSONS, find: findLesson },
+  { subject: "calculus", lessons: CALCULUS_LESSONS, find: findCalculusLesson },
+] as const;
+
+const ALL_LESSONS = SHELVES.flatMap((shelf) => shelf.lessons);
 
 /**
  * The lessons are long hand-written data files, so these are proof-reading
@@ -100,21 +109,24 @@ function unknownCommands(nodes: MathNode[]): string[] {
   });
 }
 
-describe("the algebra shelf", () => {
-  it("has unique slugs", () => {
-    const slugs = ALGEBRA_LESSONS.map((lesson) => lesson.slug);
-    expect(new Set(slugs).size).toBe(slugs.length);
-  });
+describe.each(SHELVES.map((shelf) => [shelf.subject, shelf] as const))(
+  "the %s shelf",
+  (_subject, shelf) => {
+    it("has unique slugs", () => {
+      const slugs = shelf.lessons.map((lesson) => lesson.slug);
+      expect(new Set(slugs).size).toBe(slugs.length);
+    });
 
-  it("finds every lesson by its own slug", () => {
-    for (const lesson of ALGEBRA_LESSONS) {
-      expect(findLesson(lesson.slug)).toBe(lesson);
-    }
-    expect(findLesson("no-such-topic")).toBeUndefined();
-  });
-});
+    it("finds every lesson by its own slug", () => {
+      for (const lesson of shelf.lessons) {
+        expect(shelf.find(lesson.slug)).toBe(lesson);
+      }
+      expect(shelf.find("no-such-topic")).toBeUndefined();
+    });
+  },
+);
 
-describe.each(ALGEBRA_LESSONS.map((lesson) => [lesson.slug, lesson] as const))(
+describe.each(ALL_LESSONS.map((lesson) => [lesson.slug, lesson] as const))(
   "%s",
   (_slug, lesson) => {
     const { math, prose } = collect(lesson);

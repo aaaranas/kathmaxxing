@@ -1,6 +1,6 @@
-import type { Node } from "@/lib/algebra/calculator/parse";
-import { type Value } from "@/lib/algebra/calculator/evaluate";
-import { isInteger, isNegative, negate } from "@/lib/algebra/calculator/rational";
+import type { Node } from "@/lib/math/parse";
+import { type Value } from "@/lib/math/evaluate";
+import { isInteger, isNegative, negate } from "@/lib/math/rational";
 
 /**
  * Turn a parsed expression back into the notation the lessons are set in.
@@ -38,6 +38,9 @@ export function toNotation(node: Node): string {
 
     case "constant":
       return node.name === "pi" ? "\\pi" : "e";
+
+    case "variable":
+      return node.name;
 
     case "unary":
       return (node.op === "-" ? "-" : "") + wrap(node.operand, UNARY_PRECEDENCE);

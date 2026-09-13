@@ -4,13 +4,13 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Check, Delete, Equal, Eraser, TriangleAlert } from "lucide-react";
 
-import { Math } from "@/components/algebra/math";
+import { Math } from "@/components/math";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { type AngleMode, calculate } from "@/lib/algebra/calculator";
+import { type AngleMode, calculate } from "@/lib/math/calculate";
 import { cn } from "@/lib/utils";
 
 /**

@@ -1,7 +1,8 @@
 import type { LucideIcon } from "lucide-react";
-import { Binary, Sigma } from "lucide-react";
+import { Binary, LineChart, Sigma } from "lucide-react";
 
 import { ALGEBRA_LESSONS } from "@/lib/algebra";
+import { CALCULUS_LESSONS } from "@/lib/calculus";
 
 /**
  * The shelf the app is organised on. A subject owns a route and lists what is
@@ -69,6 +70,29 @@ export const SUBJECTS: Subject[] = [
         title: "Scientific calculator",
         href: "/algebra/calculator",
         blurb: "Exact answers where they exist, and it shows how it read the expression.",
+      },
+    ],
+  },
+  {
+    id: "calculus",
+    name: "Calculus",
+    href: "/calculus",
+    icon: LineChart,
+    blurb: "Lines, functions and graphs — the groundwork underneath it all.",
+    summary:
+      "The groundwork first: lines, functions, and reading a graph off its rule. Same shape as the " +
+      "algebra shelf — the rules, the order to apply them in, then a worked solution for every kind " +
+      "of problem — with a grapher to check a sketch against.",
+    topics: [
+      ...CALCULUS_LESSONS.map((lesson) => ({
+        title: lesson.title,
+        href: `/calculus/${lesson.slug}`,
+        blurb: lesson.blurb,
+      })),
+      {
+        title: "Graphing calculator",
+        href: "/calculus/graphing-calculator",
+        blurb: "Four functions on one set of axes, with pan, zoom and a value readout.",
       },
     ],
   },

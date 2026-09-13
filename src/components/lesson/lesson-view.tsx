@@ -1,9 +1,9 @@
 import { BookOpen, ListOrdered, Ruler, TriangleAlert } from "lucide-react";
 
-import { ExampleList, PracticeList, TrapList } from "@/components/algebra/lesson-sections";
-import { Math, Prose } from "@/components/algebra/math";
+import { ExampleList, PracticeList, TrapList } from "@/components/lesson/lesson-sections";
+import { Math, Prose } from "@/components/math";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Lesson, Section } from "@/lib/algebra/types";
+import type { Lesson, Section } from "@/lib/lessons/types";
 
 const ICONS = {
   rules: Ruler,

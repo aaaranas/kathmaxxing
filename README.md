@@ -1,8 +1,8 @@
 # kathmaxxing
 
-Study notes that show their working. The home page is a shelf of subjects; each one opens with the
-rules, then the order to apply them in, then a worked solution for every kind of problem — the
-pattern named first, the move second.
+Study notes that show their working. The home page is a shelf of subjects — computer science,
+algebra and calculus — and each one opens with the rules, then the order to apply them in, then a
+worked solution for every kind of problem: the pattern named first, the move second.
 
 Built as an installable PWA with Next.js, Tailwind CSS, shadcn/ui and Neon Postgres.
 
@@ -69,6 +69,28 @@ Mono's own measured metrics so the overbar lands on the tip of the sign. And `\l
 only *drawn* when something inside it is taller than a line — otherwise it falls back to a typed
 bracket, so drawn and typed brackets never sit side by side in the same expression.
 
+### Calculus — lines, functions, graphs
+
+Three topics laid out the same way as the algebra ones: **Lines** (slope, the three forms, parallel
+and perpendicular), **Functions** (notation, domain and range, composition, and the difference
+quotient that a derivative is built from), and **Graphs** (intercepts, symmetry, the six parent
+shapes, and transformations).
+
+#### Graphing calculator
+
+`/calculus/graphing-calculator` plots up to four functions of x on one set of axes. Because black is
+the only ink in this app, curves are told apart by the *kind of line* — solid, dashed, dotted,
+dash-dot — rather than by colour, which also means they survive a projector, a photocopy, and colour
+blindness.
+
+Drag to pan, scroll to zoom, and hover anywhere to read every curve's value at that x. The view is
+held as a centre and a scale rather than as four edges, so one unit is the same length across and
+down: a slope of 1 looks like 45°, which matters when the lesson next door is about slope.
+
+The sampler breaks a curve wherever it stops being real or runs off to infinity, so `1/x` is drawn
+as two branches rather than joined across the asymptote by a vertical line that is not part of the
+graph. `sqrt(x)` simply stops at the origin, and `tan(x)` breaks at each asymptote.
+
 ## Design notes
 
 Black is the only ink in the app. Every theme is a choice of *paper stock* rather than a colour
@@ -125,19 +147,30 @@ src/
   lib/steps.ts           Turns a conversion into the worked example (pure, fully tested)
   lib/db.ts              Prisma client over the Neon adapter, plus the "is it configured" check
   lib/history.ts         Types shared between the server actions and the client
-  lib/algebra/
-    types.ts             The shape of a lesson
-    notation.ts          The formula notation: source text to a tree (pure, fully tested)
-    lessons/*.ts         One file per topic, all content, no components
-    calculator/          Exact rational arithmetic, the expression grammar, and
-                         the evaluator behind the scientific calculator (pure, fully tested)
+  lib/lessons/types.ts   The shape of a lesson, shared by every subject
+  lib/math/              The expression engine, shared by both calculators (pure, fully tested)
+    notation.ts            Display notation: source text to a tree
+    rational.ts            Exact rational arithmetic over BigInt
+    parse.ts               The expression grammar
+    evaluate.ts            Evaluation against an angle mode and a variable scope
+    render.ts              An expression back into display notation
+    calculate.ts           The scientific calculator's entry point
+    plot.ts                Views, gridlines and curve sampling for the grapher
+  lib/algebra/           Lesson content: exponents, radicals, factoring
+  lib/calculus/          Lesson content: lines, functions, graphs
   app/actions.ts         Server Actions: saveConversion, loadHistory
   app/page.tsx           The subject shelf
   app/computer-science/  The converter workbench
-  app/algebra/           The topic index, one prerendered page per lesson, and the calculator
-  components/algebra/    Formula rendering and the lesson section renderers
-  components/           Converter, steps, pattern table, history, theming, PWA registration
+  app/algebra/           Topic index, a prerendered page per lesson, scientific calculator
+  app/calculus/          Topic index, a prerendered page per lesson, graphing calculator
+  components/math.tsx    Formula rendering
+  components/lesson/     The lesson section renderers
+  components/calculator/ The scientific and graphing calculators
+  components/            Converter, steps, pattern table, history, theming, PWA registration
 ```
+
+Lessons and the expression engine are deliberately subject-agnostic: a new subject is a folder of
+content files plus two routes, not a fork of the renderer.
 
 Every algebra page is prerendered at build time and precached by the service worker, so the whole
 shelf works offline once installed.

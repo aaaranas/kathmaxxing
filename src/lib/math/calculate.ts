@@ -1,9 +1,9 @@
-import { type AngleMode, type Value, evaluate } from "@/lib/algebra/calculator/evaluate";
-import { parseExpression } from "@/lib/algebra/calculator/parse";
-import { toNotation, valueToNotation } from "@/lib/algebra/calculator/render";
-import { isInteger, toDecimalString } from "@/lib/algebra/calculator/rational";
+import { type AngleMode, type Value, evaluate } from "@/lib/math/evaluate";
+import { parseExpression } from "@/lib/math/parse";
+import { toNotation, valueToNotation } from "@/lib/math/render";
+import { isInteger, toDecimalString } from "@/lib/math/rational";
 
-export type { AngleMode, Value } from "@/lib/algebra/calculator/evaluate";
+export type { AngleMode, Value } from "@/lib/math/evaluate";
 
 export type Calculation =
   | { state: "empty" }
@@ -36,7 +36,7 @@ export function calculate(input: string, mode: AngleMode = "rad"): Calculation {
   }
 
   const reading = toNotation(parsed.node);
-  const result = evaluate(parsed.node, mode);
+  const result = evaluate(parsed.node, { angle: mode, scope: {} });
   if (!result.ok) return { state: "failed", reading, message: result.message };
 
   const value = result.value;

@@ -6,36 +6,36 @@ import { ArrowLeft, ArrowRight, Calculator, FileText } from "lucide-react";
 import { LessonContents, LessonView } from "@/components/lesson/lesson-view";
 import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
-import { ALGEBRA_LESSONS, findLesson } from "@/lib/algebra";
+import { CALCULUS_LESSONS, findCalculusLesson } from "@/lib/calculus";
 
 export function generateStaticParams() {
-  return ALGEBRA_LESSONS.map((lesson) => ({ topic: lesson.slug }));
+  return CALCULUS_LESSONS.map((lesson) => ({ topic: lesson.slug }));
 }
 
 export async function generateMetadata({
   params,
-}: PageProps<"/algebra/[topic]">): Promise<Metadata> {
+}: PageProps<"/calculus/[topic]">): Promise<Metadata> {
   const { topic } = await params;
-  const lesson = findLesson(topic);
+  const lesson = findCalculusLesson(topic);
   if (!lesson) return {};
   return { title: lesson.title, description: lesson.blurb };
 }
 
-export default async function Page({ params }: PageProps<"/algebra/[topic]">) {
+export default async function Page({ params }: PageProps<"/calculus/[topic]">) {
   const { topic } = await params;
-  const lesson = findLesson(topic);
+  const lesson = findCalculusLesson(topic);
   if (!lesson) notFound();
 
-  const position = ALGEBRA_LESSONS.indexOf(lesson);
-  const previous = ALGEBRA_LESSONS[position - 1];
-  const next = ALGEBRA_LESSONS[position + 1];
+  const position = CALCULUS_LESSONS.indexOf(lesson);
+  const previous = CALCULUS_LESSONS[position - 1];
+  const next = CALCULUS_LESSONS[position + 1];
 
   return (
     <PageShell>
       <SiteHeader
         crumbs={[
           { label: "Subjects", href: "/" },
-          { label: "Algebra", href: "/algebra" },
+          { label: "Calculus", href: "/calculus" },
           { label: lesson.title },
         ]}
         title={lesson.title}
@@ -48,11 +48,11 @@ export default async function Page({ params }: PageProps<"/algebra/[topic]">) {
           {lesson.source}
         </p>
         <Link
-          href="/algebra/calculator"
+          href="/calculus/graphing-calculator"
           className="flex items-center gap-1.5 rounded-md border border-line bg-paper px-2.5 py-1 text-xs hover:bg-plate"
         >
           <Calculator aria-hidden className="size-3 shrink-0" />
-          Calculator
+          Graphing calculator
         </Link>
       </div>
 
@@ -73,7 +73,7 @@ export default async function Page({ params }: PageProps<"/algebra/[topic]">) {
           >
             {previous ? (
               <Link
-                href={`/algebra/${previous.slug}`}
+                href={`/calculus/${previous.slug}`}
                 className="flex items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2.5 text-sm hover:bg-plate/50"
               >
                 <ArrowLeft aria-hidden className="size-3.5 shrink-0" />
@@ -88,7 +88,7 @@ export default async function Page({ params }: PageProps<"/algebra/[topic]">) {
 
             {next && (
               <Link
-                href={`/algebra/${next.slug}`}
+                href={`/calculus/${next.slug}`}
                 className="flex items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2.5 text-sm hover:bg-plate/50 sm:justify-end sm:text-right"
               >
                 <span className="flex flex-col">

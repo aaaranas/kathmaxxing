@@ -1,4 +1,4 @@
-import type { Lesson } from "@/lib/algebra/types";
+import type { Lesson } from "@/lib/lessons/types";
 
 /**
  * Notation is authored raw so a backslash stays a backslash. Prose fields take

@@ -10,6 +10,7 @@
 export type Node =
   | { kind: "number"; literal: string }
   | { kind: "constant"; name: "pi" | "e" }
+  | { kind: "variable"; name: string }
   | { kind: "unary"; op: "-" | "+"; operand: Node }
   | { kind: "binary"; op: "+" | "-" | "*" | "/" | "^"; left: Node; right: Node }
   | { kind: "call"; name: string; args: Node[] }
@@ -192,7 +193,13 @@ export function parseExpression(input: string): ParseResult {
       if (CONSTANTS.has(name)) return { kind: "constant", name: name as "pi" | "e" };
 
       const signature = FUNCTIONS[name];
-      if (signature === undefined) throw new ParseError(`"${name}" is not a function here.`);
+      if (signature === undefined) {
+        // Not a constant and not a function, so it is a variable. Whether it
+        // has a value is the evaluator's problem: the scientific calculator
+        // supplies none and reports it, the grapher supplies x.
+        if (nextIs("(")) throw new ParseError(`"${name}" is not a function here.`);
+        return { kind: "variable", name };
+      }
 
       expect("(");
       const args: Node[] = [];

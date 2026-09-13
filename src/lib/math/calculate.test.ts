@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { calculate } from "@/lib/algebra/calculator";
-import { parseExpression } from "@/lib/algebra/calculator/parse";
-import { toNotation } from "@/lib/algebra/calculator/render";
+import { calculate } from "@/lib/math/calculate";
+import { parseExpression } from "@/lib/math/parse";
+import { toNotation } from "@/lib/math/render";
 import {
   exactRoot,
   fromDecimalString,
   integerRoot,
   rational,
   toDecimalString,
-} from "@/lib/algebra/calculator/rational";
+} from "@/lib/math/rational";
 
 /** The answer as notation, or the failure message. */
 function answer(input: string, mode: "rad" | "deg" = "rad"): string {
@@ -86,7 +86,6 @@ describe("reading an expression", () => {
   });
 
   it("brackets only where dropping them would change the reading", () => {
-    expect(reading("(a)")).toBe("<unreadable>");
     expect(reading("2*(3+4)")).toBe("2 \\cdot \\left(3 + 4\\right)");
     expect(reading("2*3+4")).toBe("2 \\cdot 3 + 4");
     expect(reading("1-(2-3)")).toBe("1 - \\left(2 - 3\\right)");
@@ -98,6 +97,16 @@ describe("reading an expression", () => {
     expect(reading("sqrt(2)")).toBe("\\sqrt{2}");
     expect(reading("root(3,8)")).toBe("\\sqrt[3]{8}");
     expect(reading("abs(-2)")).toBe("\\left|-2\\right|");
+  });
+
+  it("reads a bare name as a variable, and one with brackets as a function", () => {
+    expect(reading("2x+1")).toBe("2 \\cdot x + 1");
+    expect(reading("(a)")).toBe("a");
+    expect(answer("frog(2)")).toBe('"frog" is not a function here.');
+  });
+
+  it("will not guess at a variable with no value", () => {
+    expect(answer("x+1")).toBe('"x" has no value here.');
   });
 
   it("reports what it could not read", () => {

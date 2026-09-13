@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { Calculator } from "@/components/algebra/calculator";
+import { Calculator } from "@/components/calculator/scientific";
 import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
 

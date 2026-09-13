@@ -1,4 +1,4 @@
-import type { Node } from "@/lib/algebra/calculator/parse";
+import type { Node } from "@/lib/math/parse";
 import {
   type Rational,
   ONE,
@@ -16,7 +16,7 @@ import {
   rational,
   subtract,
   toNumber,
-} from "@/lib/algebra/calculator/rational";
+} from "@/lib/math/rational";
 
 export type AngleMode = "rad" | "deg";
 
@@ -30,6 +30,15 @@ export type Value =
   | { kind: "approx"; value: number };
 
 export type Evaluation = { ok: true; value: Value } | { ok: false; message: string };
+
+/**
+ * What the expression is evaluated against: the angle mode, and any variables
+ * that have a value. The scientific calculator passes no variables, so `x + 1`
+ * is reported rather than guessed at; the grapher passes one x per sample.
+ */
+export type Context = { angle: AngleMode; scope: Record<string, Value> };
+
+export const EMPTY_CONTEXT: Context = { angle: "rad", scope: {} };
 
 /** Beyond this an exact power is a wall of digits nobody asked for. */
 const MAX_EXACT_BITS = 40000;
@@ -49,7 +58,7 @@ export function valueToNumber(value: Value): number {
   return value.kind === "exact" ? toNumber(value.value) : value.value;
 }
 
-export function evaluate(node: Node, mode: AngleMode = "rad"): Evaluation {
+export function evaluate(node: Node, context: Context = EMPTY_CONTEXT): Evaluation {
   switch (node.kind) {
     case "number":
       return exact(fromDecimalString(node.literal));
@@ -57,8 +66,16 @@ export function evaluate(node: Node, mode: AngleMode = "rad"): Evaluation {
     case "constant":
       return approx(node.name === "pi" ? Math.PI : Math.E);
 
+    case "variable": {
+      const bound = context.scope[node.name];
+      if (bound === undefined) {
+        return { ok: false, message: `"${node.name}" has no value here.` };
+      }
+      return { ok: true, value: bound };
+    }
+
     case "unary": {
-      const operand = evaluate(node.operand, mode);
+      const operand = evaluate(node.operand, context);
       if (!operand.ok) return operand;
       if (node.op === "+") return operand;
       return operand.value.kind === "exact"
@@ -67,23 +84,23 @@ export function evaluate(node: Node, mode: AngleMode = "rad"): Evaluation {
     }
 
     case "binary":
-      return evaluateBinary(node, mode);
+      return evaluateBinary(node, context);
 
     case "factorial":
-      return evaluateFactorial(node, mode);
+      return evaluateFactorial(node, context);
 
     case "call":
-      return evaluateCall(node, mode);
+      return evaluateCall(node, context);
   }
 }
 
 function evaluateBinary(
   node: Extract<Node, { kind: "binary" }>,
-  mode: AngleMode,
+  context: Context,
 ): Evaluation {
-  const left = evaluate(node.left, mode);
+  const left = evaluate(node.left, context);
   if (!left.ok) return left;
-  const right = evaluate(node.right, mode);
+  const right = evaluate(node.right, context);
   if (!right.ok) return right;
 
   if (node.op === "^") return power(left.value, right.value);
@@ -171,9 +188,9 @@ function power(base: Value, exponent: Value): Evaluation {
 
 function evaluateFactorial(
   node: Extract<Node, { kind: "factorial" }>,
-  mode: AngleMode,
+  context: Context,
 ): Evaluation {
-  const operand = evaluate(node.operand, mode);
+  const operand = evaluate(node.operand, context);
   if (!operand.ok) return operand;
 
   if (operand.value.kind !== "exact" || !isInteger(operand.value.value)) {
@@ -191,10 +208,10 @@ function evaluateFactorial(
   return exact(rational(total));
 }
 
-function evaluateCall(node: Extract<Node, { kind: "call" }>, mode: AngleMode): Evaluation {
+function evaluateCall(node: Extract<Node, { kind: "call" }>, context: Context): Evaluation {
   const args: Value[] = [];
   for (const argument of node.args) {
-    const result = evaluate(argument, mode);
+    const result = evaluate(argument, context);
     if (!result.ok) return result;
     args.push(result.value);
   }
@@ -230,11 +247,11 @@ function evaluateCall(node: Extract<Node, { kind: "call" }>, mode: AngleMode): E
     case "sin":
     case "cos":
     case "tan":
-      return trigonometry(node.name, valueToNumber(first), mode);
+      return trigonometry(node.name, valueToNumber(first), context.angle);
     case "asin":
     case "acos":
     case "atan":
-      return inverseTrigonometry(node.name, valueToNumber(first), mode);
+      return inverseTrigonometry(node.name, valueToNumber(first), context.angle);
   }
 
   return { ok: false, message: `"${node.name}" is not a function here.` };

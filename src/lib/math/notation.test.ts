@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { describeMath, parseMath, splitProse, typesetText } from "@/lib/algebra/notation";
+import { describeMath, parseMath, splitProse, typesetText } from "@/lib/math/notation";
 
 const m = String.raw;
 

@@ -6,7 +6,7 @@ import {
   parseMath,
   splitProse,
   typesetText,
-} from "@/lib/algebra/notation";
+} from "@/lib/math/notation";
 import { cn } from "@/lib/utils";
 
 /**

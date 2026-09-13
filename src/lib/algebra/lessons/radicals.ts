@@ -1,4 +1,4 @@
-import type { Lesson } from "@/lib/algebra/types";
+import type { Lesson } from "@/lib/lessons/types";
 
 const m = String.raw;
 
