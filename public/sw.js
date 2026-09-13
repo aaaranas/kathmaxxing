@@ -6,7 +6,7 @@
  * and it degrades to its own error state when the request fails.
  */
 
-const VERSION = "kathmaxxing-v4";
+const VERSION = "kathmaxxing-v5";
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 

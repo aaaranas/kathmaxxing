@@ -13,6 +13,10 @@
  * edge. Drawn as two separate strokes they float free of the stem and the
  * letter reads as an arrow.
  *
+ * The two blues are the light theme's --plate and --plate-strong, kept in step
+ * with globals.css by hand: a build step to read them back out of the CSS would
+ * cost more than it saves for two values that change once a year.
+ *
  * Run with: node scripts/generate-icons.mjs
  */
 
@@ -24,8 +28,8 @@ import sharp from "sharp";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const PLATE = "#bfd4f2";
-const PLATE_STRONG = "#97b9e6";
+const PLATE = "#87ceeb";
+const PLATE_STRONG = "#5cb8e0";
 const INK = "#000000";
 const SIZE = 512;
 const WEIGHT = 52;

@@ -58,8 +58,9 @@
   --desk: #eef1f5;
   --paper: #ffffff;
   --line: #c5ccd6;
-  --plate: #bfd4f2;
-  --plate-strong: #97b9e6;
+  /* Sky blue, and the logo is cut from the same two values. */
+  --plate: #87ceeb;
+  --plate-strong: #5cb8e0;
   --plate-alt: #f5d8b0;
   --alarm: #f3c9c4;
 }
