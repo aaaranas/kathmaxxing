@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calculator, FileText } from "lucide-react";
 
 import { LessonContents, LessonView } from "@/components/algebra/lesson-view";
 import { SiteHeader } from "@/components/site-header";
@@ -41,10 +41,19 @@ export default async function Page({ params }: PageProps<"/algebra/[topic]">) {
         description={lesson.summary}
       />
 
-      <p className="mb-4 flex items-center gap-1.5 text-xs">
-        <FileText aria-hidden className="size-3 shrink-0" />
-        {lesson.source}
-      </p>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <p className="flex items-center gap-1.5 text-xs">
+          <FileText aria-hidden className="size-3 shrink-0" />
+          {lesson.source}
+        </p>
+        <Link
+          href="/algebra/calculator"
+          className="flex items-center gap-1.5 rounded-md border border-line bg-paper px-2.5 py-1 text-xs hover:bg-plate"
+        >
+          <Calculator aria-hidden className="size-3 shrink-0" />
+          Calculator
+        </Link>
+      </div>
 
       <LessonContents lesson={lesson} />
       <LessonView lesson={lesson} />

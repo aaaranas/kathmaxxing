@@ -59,11 +59,18 @@ export const SUBJECTS: Subject[] = [
       "The rules, the method, and a worked solution for every kind of problem in the class notes. " +
       "Each solution names the pattern first and the move second, so the working reads as a list of " +
       "decisions rather than a wall of algebra.",
-    topics: ALGEBRA_LESSONS.map((lesson) => ({
-      title: lesson.title,
-      href: `/algebra/${lesson.slug}`,
-      blurb: lesson.blurb,
-    })),
+    topics: [
+      ...ALGEBRA_LESSONS.map((lesson) => ({
+        title: lesson.title,
+        href: `/algebra/${lesson.slug}`,
+        blurb: lesson.blurb,
+      })),
+      {
+        title: "Scientific calculator",
+        href: "/algebra/calculator",
+        blurb: "Exact answers where they exist, and it shows how it read the expression.",
+      },
+    ],
   },
 ];
 

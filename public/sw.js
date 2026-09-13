@@ -20,6 +20,7 @@ const PRECACHE = [
   "/algebra/rational-exponents",
   "/algebra/radicals",
   "/algebra/factoring",
+  "/algebra/calculator",
   "/manifest.webmanifest",
   "/icon-192.png",
   "/icon-512.png",

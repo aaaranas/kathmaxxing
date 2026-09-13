@@ -36,6 +36,27 @@ Lessons are plain data (`src/lib/algebra/lessons/`), so a new topic is a content
 component. A test suite proof-reads them — unknown notation commands, unclosed inline expressions,
 duplicate ids and empty sections all fail the build rather than reaching the page.
 
+#### Scientific calculator
+
+`/algebra/calculator` is a keypad calculator for checking working. Two things make it worth having
+over the one on a phone.
+
+It is **exact wherever the arithmetic allows**. All of it runs on BigInt rationals, so `0.1 + 0.2`
+is `3/10`, `(2⁻¹ + 3⁻¹)⁻¹` is `6/5`, and `(121/36)^(-3/2)` is `216/1331` — the answers the lessons
+give, not floating-point readings of them. A fractional exponent takes the root first and stays
+exact when the root comes out whole, so `(-27/8)^(1/3)` is `-3/2` rather than a `NaN`. Floating
+point is the fallback for roots that do not come out, logs and trigonometry, and the answer says
+which of the two you are looking at.
+
+It also **says how it read the expression before it answers**. Typing `-4^2` draws `−4²` and
+answers `−16`; `(-4)^2` draws `(−4)²` and answers `16`. Division is drawn as a stacked fraction for
+the same reason. Precedence is the thing that catches people out — it is a true-or-false trap in
+two of the lessons — so the reading is on the page rather than implied.
+
+Everything else is what you would expect: powers and roots to any index, logs to any base,
+trigonometry with a DEG/RAD switch, factorials, absolute value, implied multiplication (`2(3+4)`),
+and a session history you can tap to bring an expression back. Nothing is sent anywhere.
+
 #### Notation
 
 Formulas are written in a small LaTeX-flavoured notation (`src/lib/algebra/notation.ts`) and drawn
@@ -108,10 +129,12 @@ src/
     types.ts             The shape of a lesson
     notation.ts          The formula notation: source text to a tree (pure, fully tested)
     lessons/*.ts         One file per topic, all content, no components
+    calculator/          Exact rational arithmetic, the expression grammar, and
+                         the evaluator behind the scientific calculator (pure, fully tested)
   app/actions.ts         Server Actions: saveConversion, loadHistory
   app/page.tsx           The subject shelf
   app/computer-science/  The converter workbench
-  app/algebra/           The topic index and one prerendered page per lesson
+  app/algebra/           The topic index, one prerendered page per lesson, and the calculator
   components/algebra/    Formula rendering and the lesson section renderers
   components/           Converter, steps, pattern table, history, theming, PWA registration
 ```

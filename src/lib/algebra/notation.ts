@@ -60,6 +60,12 @@ const SYMBOLS: Record<string, string> = {
   // Operator names, set upright in real LaTeX; the mono face already is.
   gcd: "gcd",
   lcm: "lcm",
+  log: "log",
+  ln: "ln",
+  exp: "exp",
+  sin: "sin",
+  cos: "cos",
+  tan: "tan",
   // Sizing hints from full LaTeX that this renderer has no use for; listed so
   // notation pasted in from elsewhere does not print their names.
   big: "",

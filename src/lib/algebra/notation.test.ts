@@ -80,6 +80,13 @@ describe("parseMath", () => {
     expect(parseMath(m`a \cdot b \ne c`)).toEqual([{ kind: "text", value: "a · b ≠ c" }]);
   });
 
+  it("sets an operator name upright rather than printing its command", () => {
+    expect(parseMath(m`\log_{b}`)).toEqual([
+      { kind: "text", value: "log" },
+      { kind: "sub", body: [{ kind: "text", value: "b" }] },
+    ]);
+  });
+
   it("types a fence that has nothing tall in it", () => {
     expect(parseMath(m`\left(x\right)`)).toEqual([{ kind: "text", value: "(x)" }]);
     expect(parseMath(m`\left[x\right]`)).toEqual([{ kind: "text", value: "[x]" }]);
