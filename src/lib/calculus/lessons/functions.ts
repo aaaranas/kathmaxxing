@@ -5,7 +5,7 @@ const m = String.raw;
 export const functions: Lesson = {
   slug: "functions",
   title: "Functions",
-  blurb: "Notation, domain and range, composition, and the difference quotient.",
+  blurb: "Notation, domain and range, combining and composing, piecewise rules, and the difference quotient.",
   source: "Calculus — graphing and functions",
   summary:
     "A function is a rule with one promise attached: give it an input and it returns exactly one " +
@@ -203,6 +203,228 @@ export const functions: Lesson = {
       ],
     },
     {
+      kind: "rules",
+      id: "operations",
+      title: "Combining two functions",
+      intro:
+        "Add, subtract, multiply or divide two functions value by value. The arithmetic is the " +
+        "easy half; the domain is the half that gets marked.",
+      rules: [
+        {
+          name: "Sum and difference",
+          expr: m`(f \pm g)(x) = f(x) \pm g(x)`,
+          note: "Work out each output separately, then combine the two numbers. Nothing clever happens.",
+        },
+        {
+          name: "Product",
+          expr: m`(f \cdot g)(x) = f(x) \cdot g(x)`,
+          note: "Two radicals multiplied can be pulled under one radical sign, which tidies the answer and hides the domain. Write the domain down before you tidy.",
+        },
+        {
+          name: "Quotient",
+          expr: m`\left(\frac{f}{g}\right)(x) = \frac{f(x)}{g(x)}, \quad g(x) \ne 0`,
+          note: m`The quotient carries one restriction the others do not: every $x$ with $g(x) = 0$ is thrown out, even though it sat happily inside both original domains.`,
+        },
+        {
+          name: "Domain of any combination",
+          expr: m`\text{domain of } f \; \cap \; \text{domain of } g`,
+          note: "Both rules have to be computable before they can be combined, so only the overlap survives. The stricter of the two conditions wins.",
+        },
+      ],
+      note: "The domain comes from the two functions you started with, never from the expression you finish with.",
+    },
+    {
+      kind: "examples",
+      id: "combining",
+      title: "Worked examples \u2014 combining functions",
+      intro:
+        "The same pair throughout, so the only thing changing is the operation and what it does to the domain.",
+      examples: [
+        {
+          id: "cb-1",
+          prompt: m`f(x) = \sqrt{x + 1}, \; g(x) = \sqrt{x - 4}, \quad \text{find } (f + g)(x) \text{ and its domain}`,
+          pattern: "Sum",
+          tell: "Two rules joined by a plus. Find both domains before adding anything.",
+          steps: [
+            {
+              expr: m`x + 1 \ge 0 \Rightarrow x \ge -1`,
+              reason: "Domain of f: an even root cannot take a negative.",
+            },
+            {
+              expr: m`x - 4 \ge 0 \Rightarrow x \ge 4`,
+              reason: "Domain of g, the same way.",
+            },
+            {
+              expr: m`\left[4, \infty\right)`,
+              reason: "Both at once. The stricter condition wins, so the overlap starts at 4.",
+            },
+            {
+              expr: m`(f + g)(x) = \sqrt{x + 1} + \sqrt{x - 4}`,
+              reason: "Only now add the rules together.",
+            },
+          ],
+          answer: m`\sqrt{x + 1} + \sqrt{x - 4}, \quad \left[4, \infty\right)`,
+          check: m`Test $x = 0$: it clears $f$, but $g(0) = \sqrt{-4}$ does not exist, so 0 is outside \u2014 which is what $\left[4, \infty\right)$ says.`,
+        },
+        {
+          id: "cb-2",
+          prompt: m`f(x) = \sqrt{x + 1}, \; g(x) = \sqrt{x - 4}, \quad \text{find } (f \cdot g)(x) \text{ and its domain}`,
+          pattern: "Product, and the domain it hides",
+          tell: "Two radicals multiplied. They will combine under one sign, and that is exactly when the domain stops being readable off the answer.",
+          steps: [
+            {
+              expr: m`(f \cdot g)(x) = \sqrt{x + 1} \cdot \sqrt{x - 4}`,
+              reason: "Multiply the two rules.",
+            },
+            {
+              expr: m`= \sqrt{(x + 1)(x - 4)} = \sqrt{x^{2} - 3x - 4}`,
+              reason: "One radical over the product, then expand inside.",
+            },
+            {
+              expr: m`\left[4, \infty\right)`,
+              reason: "The domain is still the overlap of the two originals, not whatever the tidied answer would allow.",
+            },
+          ],
+          answer: m`\sqrt{x^{2} - 3x - 4}, \quad \left[4, \infty\right)`,
+          check: m`Read on its own, $\sqrt{x^{2} - 3x - 4}$ would also accept $x \le -1$. But at $x = -2$ the factor $g(-2) = \sqrt{-6}$ never existed, so those inputs were never in the domain to begin with.`,
+        },
+        {
+          id: "cb-3",
+          prompt: m`f(x) = \sqrt{x + 1}, \; g(x) = \sqrt{x - 4}, \quad \text{find } \left(\frac{f}{g}\right)(x) \text{ and its domain}`,
+          pattern: "Quotient",
+          tell: "A quotient always carries one restriction beyond the overlap: the bottom cannot be zero.",
+          steps: [
+            {
+              expr: m`\left(\frac{f}{g}\right)(x) = \frac{\sqrt{x + 1}}{\sqrt{x - 4}} = \sqrt{\frac{x + 1}{x - 4}}`,
+              reason: "Divide the rules; one radical over the quotient.",
+            },
+            {
+              expr: m`g(4) = \sqrt{0} = 0`,
+              reason: "Find where the denominator vanishes.",
+            },
+            {
+              expr: m`\left(4, \infty\right)`,
+              reason: "Start from the overlap and remove x = 4.",
+            },
+          ],
+          answer: m`\sqrt{\frac{x + 1}{x - 4}}, \quad \left(4, \infty\right)`,
+          check: "The square bracket turned round. That one change of bracket is the entire difference between this and the product.",
+        },
+        {
+          id: "cb-4",
+          prompt: m`f(x) = \sqrt{x}, \; g(x) = x^{2} - 1, \quad \text{find } (g \circ f)(x) \text{ and its domain}`,
+          pattern: "Composition, with the domain kept",
+          tell: "The answer will simplify into something defined everywhere. The domain does not follow it.",
+          steps: [
+            {
+              expr: m`(g \circ f)(x) = g\left(\sqrt{x}\right)`,
+              reason: "f goes first, so g receives the square root.",
+            },
+            {
+              expr: m`= \left(\sqrt{x}\right)^{2} - 1 = x - 1`,
+              reason: "Squaring undoes the root.",
+            },
+            {
+              expr: m`x \ge 0`,
+              reason: "But the root had to be computable on the way in, and that restriction survives the simplification.",
+            },
+          ],
+          answer: m`x - 1, \quad \left[0, \infty\right)`,
+          check: m`Try $x = -4$: the tidied rule would answer $-5$, but $f(-4) = \sqrt{-4}$ has no value, so the composition has none either. Simplifying never widens a domain.`,
+        },
+      ],
+    },
+    {
+      kind: "rules",
+      id: "piecewise",
+      title: "Piecewise, absolute value and step",
+      intro:
+        "One function, several rules, each owning a stretch of the domain. To evaluate, first " +
+        "decide which stretch the input lands in, then use only that rule.",
+      rules: [
+        {
+          name: "A rule with two branches",
+          expr: m`f(x) = 1 - x \quad \text{when } x \le -1`,
+          note: "The condition is as much a part of the rule as the formula is. Reading the formula without it is the usual mistake.",
+        },
+        {
+          name: "...and the other branch",
+          expr: m`f(x) = x^{2} \quad \text{when } x > -1`,
+          note: "The conditions must cover the domain without overlapping. Exactly one branch owns any given input, which is what keeps it a function.",
+        },
+        {
+          name: "Absolute value is piecewise",
+          expr: m`\left|x\right| = -x \text{ when } x < 0, \quad x \text{ when } x \ge 0`,
+          note: "It returns the distance from zero, so it is never negative. The minus sign on the first branch is what turns a negative input positive.",
+        },
+        {
+          name: "Filled and hollow endpoints",
+          expr: m`\text{filled dot included, hollow dot excluded}`,
+          note: m`At a boundary the branch whose condition uses $\le$ or $\ge$ takes the filled dot; the branch with a strict $<$ or $>$ takes the hollow one.`,
+        },
+        {
+          name: "Step function",
+          expr: m`\text{constant across an interval, then a jump}`,
+          note: "A piecewise function whose every branch is a constant. The graph is a run of flat segments, each with one filled and one hollow end.",
+        },
+      ],
+    },
+    {
+      kind: "examples",
+      id: "piecewise-work",
+      title: "Worked examples \u2014 piecewise",
+      examples: [
+        {
+          id: "pw-1",
+          prompt: m`f(x) = 1 - x \text{ when } x \le -1, \; f(x) = x^{2} \text{ when } x > -1, \quad \text{find } f(-2), \, f(-1), \, f(0)`,
+          pattern: "Evaluating a piecewise rule",
+          tell: "Three inputs, two rules. Match each input to its interval before substituting anything.",
+          steps: [
+            {
+              expr: m`-2 \le -1 \Rightarrow f(-2) = 1 - (-2) = 3`,
+              reason: "\u22122 satisfies the top condition, so the top rule applies.",
+            },
+            {
+              expr: m`-1 \le -1 \Rightarrow f(-1) = 1 - (-1) = 2`,
+              reason: "The condition is \u2264, so the boundary itself belongs to the top rule, not the bottom one.",
+            },
+            {
+              expr: m`0 > -1 \Rightarrow f(0) = 0^{2} = 0`,
+              reason: "Zero falls in the second interval.",
+            },
+          ],
+          answer: m`f(-2) = 3, \quad f(-1) = 2, \quad f(0) = 0`,
+          check: m`The boundary is the one worth checking twice. Using the wrong branch at $x = -1$ would give 1 rather than 2.`,
+        },
+        {
+          id: "pw-2",
+          prompt: m`\text{Sketch } f(x) = 1 - x \text{ when } x \le -1, \; f(x) = x^{2} \text{ when } x > -1`,
+          pattern: "Graphing a piecewise rule",
+          tell: "Draw each parent shape, then keep only the stretch its condition owns.",
+          steps: [
+            {
+              expr: m`y = 1 - x \text{ for } x \le -1`,
+              reason: "A line, but only the part to the left of x = \u22121.",
+            },
+            {
+              expr: m`\text{filled dot at } (-1, 2)`,
+              reason: "x = \u22121 belongs to this branch, so its endpoint is included.",
+            },
+            {
+              expr: m`y = x^{2} \text{ for } x > -1`,
+              reason: "A parabola, but only the part to the right of x = \u22121.",
+            },
+            {
+              expr: m`\text{hollow dot at } (-1, 1)`,
+              reason: "The parabola would reach (\u22121, 1), but that input is not this branch's to own.",
+            },
+          ],
+          answer: m`\text{Two pieces with a jump at } x = -1`,
+          check: "The two dots sit one above the other at x = \u22121, one filled and one hollow. Exactly one filled dot per input, or it would not be a function.",
+        },
+      ],
+    },
+    {
       kind: "traps",
       id: "traps",
       title: "Where this goes wrong",
@@ -221,6 +443,16 @@ export const functions: Lesson = {
           wrong: m`\frac{x + 3}{x^{2} - 9} = \frac{1}{x - 3} \text{, so the domain is } x \ne 3`,
           right: m`\text{The domain is still } x \ne -3 \text{ and } x \ne 3`,
           why: m`Cancelling simplifies the expression, but the function was defined by the original rule and that rule was never given a value at $-3$. Simplifying cannot hand it one.`,
+        },
+        {
+          wrong: m`\text{domain of } (f \cdot g) \text{, read off } \sqrt{x^{2} - 3x - 4}`,
+          right: m`\text{domain of } f \; \cap \; \text{domain of } g`,
+          why: m`Combining two rules can tidy into an expression that would accept more inputs than either original did. $\sqrt{x + 1}\sqrt{x - 4}$ becomes $\sqrt{x^{2} - 3x - 4}$, which alone would take $x = -2$ \u2014 but $g(-2) = \sqrt{-6}$ never existed.`,
+        },
+        {
+          wrong: m`\text{at a boundary, use whichever branch is easier}`,
+          right: m`\text{use the branch whose condition includes the boundary}`,
+          why: m`Exactly one branch may own the boundary. Against $x \le -1$ and $x > -1$, the input $x = -1$ is the top rule's. Handing it to both would put two outputs on one input.`,
         },
         {
           wrong: m`f(x) = x^{2} \text{ is not a function, because } f(2) \text{ and } f(-2) \text{ both give } 4`,
@@ -258,6 +490,21 @@ export const functions: Lesson = {
           prompt: m`f(x) = x - 4, \; g(x) = x^{2}, \quad (f \circ g)(x)`,
           answer: m`x^{2} - 4`,
           hint: m`$g$ first, so $f$ receives $x^{2}$.`,
+        },
+        {
+          prompt: m`f(x) = 2x - 3, \; g(x) = x^{2}, \quad \left(\frac{f}{g}\right)(x) \text{ and its domain}`,
+          answer: m`\frac{2x - 3}{x^{2}}, \quad x \ne 0`,
+          hint: "Both are polynomials, so the overlap is everything. Only the zero of the bottom is removed.",
+        },
+        {
+          prompt: m`f(x) = \sqrt{x}, \; g(x) = x^{2} - 1, \quad (f \circ g)(x) \text{ and its domain}`,
+          answer: m`\sqrt{x^{2} - 1}, \quad \left(-\infty, -1\right] \cup \left[1, \infty\right)`,
+          hint: m`Here the root comes last, so the restriction is $x^{2} - 1 \ge 0$.`,
+        },
+        {
+          prompt: m`f(x) = x + 4 \text{ when } x < -2, \; f(x) = x^{2} \text{ when } x \ge -2, \quad f(-3) \text{ and } f(-2)`,
+          answer: m`f(-3) = 1, \quad f(-2) = 4`,
+          hint: m`$-2$ is the boundary and the second branch uses $\ge$, so it owns it.`,
         },
         {
           prompt: m`f(x) = x^{2} + x, \quad \frac{f(x + h) - f(x)}{h}`,

@@ -5,7 +5,7 @@ const m = String.raw;
 export const graphs: Lesson = {
   slug: "graphs",
   title: "Graphs",
-  blurb: "Intercepts, symmetry, the parent shapes, and how a change to the rule moves the picture.",
+  blurb: "Intercepts, symmetry, the parent shapes, asymptotes, and sketching a curve from its equation.",
   source: "Calculus — graphing and functions",
   summary:
     "Plotting points works, and it is slow. The faster route is to know a handful of parent shapes " +
@@ -219,6 +219,140 @@ export const graphs: Lesson = {
       ],
     },
     {
+      kind: "rules",
+      id: "asymptotes",
+      title: "Asymptotes",
+      intro:
+        "A straight line the curve creeps towards without ever arriving. Both kinds come from the " +
+        "same move, done once with each variable.",
+      rules: [
+        {
+          name: "Vertical asymptote",
+          expr: m`\text{solve for } y \text{, then set the denominator to } 0`,
+          note: m`Where the bottom vanishes the output runs off to infinity, so each such $x = a$ is a vertical asymptote. The curve can never cross it \u2014 there is no output there at all.`,
+        },
+        {
+          name: "Horizontal asymptote",
+          expr: m`\text{solve for } x \text{, then set that denominator to } 0`,
+          note: m`The same move with the variables swapped. Each $y = b$ it rules out is a horizontal asymptote, describing where the curve settles far from the origin.`,
+        },
+        {
+          name: "The numerator has to survive",
+          expr: m`\text{denominator} = 0 \text{ while numerator} \ne 0`,
+          note: m`If both vanish at the same value the factor cancels, and what you have is a hole in the curve rather than an asymptote.`,
+        },
+        {
+          name: "Each rearrangement pays twice",
+          expr: m`\text{solve for } y \to \text{domain}, \quad \text{solve for } x \to \text{range}`,
+          note: "Solving for y hands you the domain and the vertical asymptotes together; solving for x hands you the range and the horizontal ones. Do each rearrangement once and read both answers off it.",
+        },
+      ],
+    },
+    {
+      kind: "checklist",
+      id: "sketching",
+      title: "Sketching a curve",
+      intro:
+        "Four tools, in this order. Together they turn an equation into a picture without plotting " +
+        "a table of points.",
+      items: [
+        {
+          label: "Intercepts",
+          detail: m`Set $y = 0$ for the x-intercepts and $x = 0$ for the y-intercept. If the resulting equation has no solution then that intercept does not exist, which is itself worth knowing.`,
+        },
+        {
+          label: "Symmetry",
+          detail: m`Replace $y$ with $-y$, then $x$ with $-x$, then both. Every substitution that leaves the equation unchanged halves the drawing you have left to do.`,
+        },
+        {
+          label: "Solve for y",
+          detail: "This hands you the domain and every vertical asymptote at once.",
+        },
+        {
+          label: "Solve for x",
+          detail: "And this hands you the range and every horizontal asymptote.",
+        },
+        {
+          label: "Dash the asymptotes, then join up",
+          detail: "Draw the asymptotes as dashed lines first and plot the intercepts. Then test one large value on each branch to see which side of the asymptote that branch runs along.",
+        },
+      ],
+    },
+    {
+      kind: "examples",
+      id: "sketch",
+      title: "Worked examples \u2014 a full sketch",
+      intro:
+        "One curve, taken through all four tools. It is not a function, which is exactly why the " +
+        "tools rather than the parent shapes are what get you there.",
+      examples: [
+        {
+          id: "sk-1",
+          prompt: m`\text{Intercepts and symmetry of } x\left(y^{2} - 4\right) = 8`,
+          pattern: "Intercepts and symmetry",
+          tell: "An equation in both variables rather than a rule for y, so start with the two cheapest tools.",
+          steps: [
+            {
+              expr: m`y = 0 \Rightarrow -4x = 8 \Rightarrow x = -2`,
+              reason: "x-intercept: set y = 0 and solve.",
+            },
+            {
+              expr: m`x = 0 \Rightarrow 0 \ne 8`,
+              reason: "y-intercept: setting x = 0 leaves 0 on the left and 8 on the right, so there is none.",
+            },
+            {
+              expr: m`x\left(\left(-y\right)^{2} - 4\right) = x\left(y^{2} - 4\right)`,
+              reason: "Replace y with −y: unchanged, because y appears only squared. Symmetric about the x-axis.",
+            },
+            {
+              expr: m`-x\left(y^{2} - 4\right) \ne 8`,
+              reason: "Replace x with −x: not unchanged. Same result for both substitutions together, so no y-axis and no origin symmetry.",
+            },
+          ],
+          answer: m`(-2, 0) \text{ only}, \quad \text{symmetric about the x-axis}`,
+          check: m`Having no y-intercept is an early warning that $x = 0$ is about to turn out to be an asymptote.`,
+        },
+        {
+          id: "sk-2",
+          prompt: m`\text{Domain, range and asymptotes of } x\left(y^{2} - 4\right) = 8`,
+          pattern: "Both rearrangements",
+          tell: "Solve for each variable in turn. Each rearrangement answers two questions.",
+          steps: [
+            {
+              expr: m`y^{2} - 4 = \frac{8}{x}`,
+              reason: "Divide by x to start isolating y.",
+            },
+            {
+              expr: m`y^{2} = \frac{8}{x} + 4 = \frac{4(x + 2)}{x}`,
+              reason: "Add 4 over a common denominator, then factor the 4 out.",
+            },
+            {
+              expr: m`y = \pm 2\sqrt{\frac{x + 2}{x}}`,
+              reason: "Take the root. The ± is why this is a curve and not a function.",
+            },
+            {
+              expr: m`\left(-\infty, -2\right] \cup \left(0, \infty\right)`,
+              reason: "Domain: the radicand must be ≥ 0. Testing −3, −1 and 1 keeps the outer two stretches; x = 0 is excluded outright.",
+            },
+            {
+              expr: m`x = 0`,
+              reason: "That excluded denominator is the vertical asymptote.",
+            },
+            {
+              expr: m`x = \frac{8}{y^{2} - 4}`,
+              reason: "Now the other rearrangement, solving for x instead.",
+            },
+            {
+              expr: m`y \ne 2, \quad y \ne -2`,
+              reason: "This denominator vanishes at ±2, so those heights leave the range — and they are the horizontal asymptotes.",
+            },
+          ],
+          answer: m`\text{domain } \left(-\infty, -2\right] \cup \left(0, \infty\right), \quad x = 0, \quad y = \pm 2`,
+          check: m`Which side does each branch run? At $x = 8$ the right branch gives $2\sqrt{1.25} \approx 2.24$, outside $y = 2$; at $x = -10$ the left branch gives $2\sqrt{0.8} \approx 1.79$, inside it. The two branches approach the same pair of lines from opposite sides.`,
+        },
+      ],
+    },
+    {
       kind: "traps",
       id: "traps",
       title: "Where this goes wrong",
@@ -237,6 +371,16 @@ export const graphs: Lesson = {
           wrong: m`f(-x) = -f(x) \text{ for every function}`,
           right: m`\text{Only for odd functions}`,
           why: m`It is a test, not an identity — it is the question being asked, not a rule that can be applied. Most functions fail it, and failing is a valid answer.`,
+        },
+        {
+          wrong: m`\text{a curve can never cross an asymptote}`,
+          right: m`\text{never a vertical one; a horizontal one it may}`,
+          why: "A vertical asymptote sits at a missing input, so nothing can be plotted there at all. A horizontal asymptote only describes where the curve settles far out, and near the origin it is free to cross it and come back.",
+        },
+        {
+          wrong: m`\text{denominator} = 0 \text{ always gives an asymptote}`,
+          right: m`\text{cancel first, then look}`,
+          why: m`If the top vanishes at the same value, the factor cancels and leaves a hole rather than an asymptote. $\frac{x^{2} - 9}{x - 3}$ has no asymptote at $x = 3$ — only a single missing point on an otherwise ordinary line.`,
         },
         {
           wrong: m`\text{A graph symmetric about the x-axis is a function}`,
@@ -275,6 +419,21 @@ export const graphs: Lesson = {
           prompt: m`\text{Describe } y = \frac{1}{x + 2}`,
           answer: m`\text{Reciprocal, moved left } 2`,
           hint: m`The vertical asymptote goes where the bottom is zero, at $x = -2$.`,
+        },
+        {
+          prompt: m`\text{Asymptotes of } y = \frac{x + 1}{x - 2}`,
+          answer: m`x = 2, \quad y = 1`,
+          hint: m`Bottom zero gives the vertical. For the horizontal, solve for $x$: $x = \frac{2y + 1}{y - 1}$.`,
+        },
+        {
+          prompt: m`\text{Asymptotes of } y = \frac{3x}{x^{2} - 4}`,
+          answer: m`x = 2, \quad x = -2, \quad y = 0`,
+          hint: m`The bottom factors as $(x - 2)(x + 2)$, and the top is non-zero at both.`,
+        },
+        {
+          prompt: m`\text{Symmetry of } x^{2} + 4y^{2} = 16`,
+          answer: m`\text{x-axis, y-axis and origin}`,
+          hint: "Both variables appear only squared, so every sign change is absorbed.",
         },
         {
           prompt: m`\text{Describe } y = -|x - 1| + 3`,
