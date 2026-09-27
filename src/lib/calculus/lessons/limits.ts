@@ -72,15 +72,19 @@ export const limits: Lesson = {
           detail: m`Not indeterminate at all, and no algebra will fix it. The size is settled — it blows up — so the only question left is the sign, which you get from each side separately.`,
         },
         {
-          label: m`4. Heading to $\infty$ ? Compare the degrees`,
+          label: m`4. Two pieces each blowing up? Put them over one denominator`,
+          detail: m`A difference of fractions that each run away is the $\infty - \infty$ form, and it is indeterminate: the two infinities can cancel to anything at all. You cannot take the two limits separately. Combine into a single fraction first, then read what that one fraction gives — usually $\frac{k}{0}$, occasionally $\frac{0}{0}$.`,
+        },
+        {
+          label: m`5. Heading to $\infty$ ? Compare the degrees`,
           detail: m`Divide top and bottom by the highest power of $x$ in the bottom, or read the degrees off directly with the shortcut below.`,
         },
         {
-          label: "5. A piecewise rule or an absolute value? Take the sides separately",
+          label: "6. A piecewise rule or an absolute value? Take the sides separately",
           detail: m`Either one changes its formula at a point, so the two sides are genuinely different functions there. Work out each one-sided limit and then compare them.`,
         },
         {
-          label: "6. Still stuck? Look for a standard limit or a squeeze",
+          label: "7. Still stuck? Look for a standard limit or a squeeze",
           detail: m`A $\frac{\sin}{\;}$ shape usually wants the standard trig limit; something bounded multiplied by something heading to zero usually wants the squeeze theorem.`,
         },
       ],
@@ -278,6 +282,51 @@ export const limits: Lesson = {
           check:
             "This is the whole reason the numerator gets checked first. A vanishing denominator on its " +
             "own decides nothing; it is the pair that decides.",
+        },
+        {
+          id: "inf-6",
+          prompt: m`\lim_{x \to -4^{-}} \left( \frac{2}{x^{2} + 5x + 4} - \frac{3}{x + 4} \right)`,
+          pattern: m`$\infty - \infty$, so combine first`,
+          tell:
+            m`Two fractions, and both bottoms vanish at $-4$. Each piece runs away on its own, so this ` +
+            m`is $\infty - \infty$ — indeterminate, and the separate limits are not allowed to be taken. ` +
+            "One denominator first, then substitute.",
+          steps: [
+            {
+              expr: m`x^{2} + 5x + 4 = (x + 1)(x + 4)`,
+              reason: m`Factor, which also shows the shared $(x + 4)$ that makes the common denominator.`,
+            },
+            {
+              expr: m`= \frac{2}{(x + 1)(x + 4)} - \frac{3(x + 1)}{(x + 1)(x + 4)}`,
+              reason: m`Put the second fraction over the same bottom by multiplying it by $\frac{x+1}{x+1}$.`,
+            },
+            {
+              expr: m`= \frac{2 - 3(x + 1)}{(x + 1)(x + 4)} = \frac{-3x - 1}{(x + 1)(x + 4)}`,
+              reason: m`One fraction now, so the $\infty - \infty$ is gone and it can be read.`,
+            },
+            {
+              expr: m`\text{top} \to -3(-4) - 1 = 11, \quad \text{bottom} \to 0`,
+              reason: m`$\frac{11}{0}$, not $\frac{0}{0}$: the size is settled, so only the sign is left.`,
+            },
+            {
+              expr: m`x \to -4^{-}: \; x + 4 \to 0^{-}, \quad x + 1 \to -3`,
+              reason: m`From the left, $x$ is a shade under $-4$ — try $x = -4.01$ — so $x + 4$ is a small negative.`,
+            },
+            {
+              expr: m`\text{bottom} = (-3)(0^{-}) = 0^{+}`,
+              reason: "Two negatives multiplied: the bottom is a small positive.",
+            },
+            {
+              expr: m`\frac{+11}{0^{+}} \;\Rightarrow\; +\infty`,
+              reason: "A fixed positive over a small positive.",
+            },
+          ],
+          answer: m`+\infty`,
+          check:
+            m`From the right, $x + 4$ is a small positive and the bottom turns negative, giving $-\infty$ — ` +
+            m`so the two-sided limit does not exist and $x = -4$ is a vertical asymptote. Worth putting ` +
+            m`$\frac{2}{x^{2}+5x+4} - \frac{3}{x+4}$ into the grapher: the two branches at $-4$ are the ` +
+            "two answers.",
         },
       ],
     },
@@ -498,6 +547,16 @@ export const limits: Lesson = {
           prompt: m`\lim_{x \to -\infty} \frac{\sqrt{9x^{2} + 2}}{x}`,
           answer: m`-3`,
           hint: m`$\sqrt{9x^{2}} = 3|x|$, and $|x| = -x$ on the way to $-\infty$.`,
+        },
+        {
+          prompt: m`\lim_{x \to 1} \left( \frac{1}{x - 1} - \frac{2}{x^{2} - 1} \right)`,
+          answer: m`\frac{1}{2}`,
+          hint: m`$\infty - \infty$: factor $x^{2} - 1$ and combine. What is left cancels, so this one is not infinite at all.`,
+        },
+        {
+          prompt: m`\lim_{x \to 2^{-}} \left( \frac{3}{x - 2} - \frac{1}{x^{2} - 4} \right)`,
+          answer: m`-\infty`,
+          hint: m`Same first move. This time the combined fraction is $\frac{k}{0}$, so the side decides the sign.`,
         },
       ],
     },

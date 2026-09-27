@@ -47,8 +47,15 @@ export function ExampleList({ examples }: { examples: WorkedExample[] }) {
     <Accordion type="single" collapsible className="w-full">
       {examples.map((example, index) => (
         <AccordionItem key={example.id} value={example.id} className="border-line last:border-b-0">
-          <AccordionTrigger className="gap-3 text-left hover:no-underline">
-            <span className="flex flex-1 items-center gap-3">
+          {/* min-w-0 on the trigger itself: a flex item will not shrink below
+              its content without it, so a long prompt would stretch the row. */}
+          <AccordionTrigger className="min-w-0 gap-3 text-left hover:no-underline">
+            {/*
+              min-w-0 the whole way down, or a long prompt stretches the row
+              instead of scrolling inside it - which on a phone pushes the
+              whole page sideways.
+            */}
+            <span className="flex min-w-0 flex-1 items-center gap-3">
               <span
                 aria-hidden
                 className="tnum flex size-7 shrink-0 items-center justify-center rounded-md bg-plate font-mono text-xs font-medium"
@@ -56,8 +63,15 @@ export function ExampleList({ examples }: { examples: WorkedExample[] }) {
                 {index + 1}
               </span>
               <span className="flex min-w-0 flex-col gap-1">
-                <Math expr={example.prompt} className="overflow-x-auto text-base" />
-                <span className="text-xs font-medium">{example.pattern}</span>
+                {/*
+                  Block rather than inline: an inline span is as wide as its
+                  contents whatever its parent says, so a long prompt would
+                  push the row sideways instead of scrolling inside it.
+                */}
+                <Math expr={example.prompt} display="block" className="text-base" />
+                <span className="text-xs font-medium">
+                  <Prose text={example.pattern} />
+                </span>
               </span>
             </span>
           </AccordionTrigger>

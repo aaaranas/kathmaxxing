@@ -41,6 +41,7 @@ const FINITE: [name: string, f: string, a: number, limit: number][] = [
   ["practice 2", "(sqrt(x+9)-3)/x", 0, 1 / 6],
   ["practice 3", "(x-5)/(x^2-25)", 5, 0.1],
   ["practice 7", "sin(7*x)/x", 0, 7],
+  ["practice 9, an infinity minus an infinity that cancels", "1/(x-1)-2/(x^2-1)", 1, 0.5],
 ];
 
 describe.each(FINITE)("finite limit — %s", (_name, f, a, limit) => {
@@ -69,6 +70,10 @@ const INFINITE: [name: string, f: string, a: number, side: -1 | 1, sign: -1 | 1]
   ["squared denominator, left", "(x+1)/(x-3)^2", 3, -1, 1],
   ["squared denominator, right", "(x+1)/(x-3)^2", 3, 1, 1],
   ["practice 4", "3/(x-2)", 2, 1, 1],
+  // The one off her homework: two pieces that each run away, combined first.
+  ["combined fractions, from the left", "2/(x^2+5*x+4)-3/(x+4)", -4, -1, 1],
+  ["combined fractions, from the right", "2/(x^2+5*x+4)-3/(x+4)", -4, 1, -1],
+  ["practice 10", "3/(x-2)-1/(x^2-4)", 2, -1, -1],
 ];
 
 describe.each(INFINITE)("infinite limit — %s", (_name, f, a, side, sign) => {
