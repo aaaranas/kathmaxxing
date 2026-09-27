@@ -58,14 +58,38 @@ export function freeVariables(node: Node): string[] {
   return [...found];
 }
 
-function valueAt(node: Node, variable: string, x: number, angle: AngleMode): number | null {
-  const result = evaluate(node, {
-    angle,
-    scope: { [variable]: { kind: "approx", value: x } },
-  });
+function valueIn(node: Node, scope: Record<string, number>, angle: AngleMode): number | null {
+  const bound = Object.fromEntries(
+    Object.entries(scope).map(([name, x]) => [name, { kind: "approx" as const, value: x }]),
+  );
+  const result = evaluate(node, { angle, scope: bound });
   if (!result.ok) return null;
   const value = valueToNumber(result.value);
   return Number.isFinite(value) ? value : null;
+}
+
+function valueAt(node: Node, variable: string, x: number, angle: AngleMode): number | null {
+  return valueIn(node, { [variable]: x }, angle);
+}
+
+/**
+ * One set of values per test point, with each letter walking the sample list
+ * from a different start. Two letters therefore never hold the same value at
+ * the same time, so a + b and 2a are told apart rather than both passing.
+ */
+function testPoints(variables: string[]): Record<string, number>[] {
+  return SAMPLES.map((_, index) =>
+    Object.fromEntries(
+      variables.map((name, slot) => [name, SAMPLES[(index + slot * 5) % SAMPLES.length]]),
+    ),
+  );
+}
+
+/** `x = 1.2, y = -0.8`, for naming the point a disagreement showed up at. */
+function describePoint(point: Record<string, number>): string {
+  return Object.entries(point)
+    .map(([name, x]) => `${name} = ${x}`)
+    .join(", ");
 }
 
 /** Relative, so a disagreement of 1e-7 counts at either 1 or 10^9. */
@@ -88,9 +112,10 @@ export type CheckOptions = { angle?: AngleMode; variable?: string };
 /**
  * Whether two expressions describe the same thing.
  *
- * With no variable in either, this is one comparison. With a variable, it is
- * agreement across the sample points where both are defined - so `1/x` and
- * `1/x` agree, and the hole at zero counts against neither.
+ * With no letters in either, this is one comparison. With letters in them, it
+ * is agreement across a dozen test points where both are defined - so `1/x`
+ * and `1/x` agree, and the hole at zero counts against neither. Several
+ * letters are fine: each takes its own value at each point.
  */
 export function areEquivalent(mine: string, theirs: string, options: CheckOptions = {}): Check {
   const angle = options.angle ?? "rad";
@@ -117,30 +142,22 @@ export function areEquivalent(mine: string, theirs: string, options: CheckOption
         };
   }
 
-  if (variables.length > 1) {
-    return {
-      state: "unsure",
-      detail: `This checks one variable at a time, and found ${variables.join(", ")}.`,
-    };
-  }
-
-  const variable = variables[0];
   let compared = 0;
-  for (const x of SAMPLES) {
-    const l = valueAt(a, variable, x, angle);
-    const r = valueAt(b, variable, x, angle);
+  for (const point of testPoints(variables)) {
+    const l = valueIn(a, point, angle);
+    const r = valueIn(b, point, angle);
     // Undefined on both sides is agreement about a hole, not a disagreement.
     if (l === null && r === null) continue;
     if (l === null || r === null) {
       return {
         state: "incorrect",
-        detail: `At ${variable} = ${x} one of them is defined and the other is not.`,
+        detail: `At ${describePoint(point)} one of them is defined and the other is not.`,
       };
     }
     if (!agrees(l, r)) {
       return {
         state: "incorrect",
-        detail: `At ${variable} = ${x} they give ${round(l)} and ${round(r)}.`,
+        detail: `At ${describePoint(point)} they give ${round(l)} and ${round(r)}.`,
       };
     }
     compared += 1;

@@ -603,9 +603,10 @@ export function AnswerChecker() {
             <span className="font-mono">3+2x</span> for <span className="font-mono">2x+3</span>.
           </p>
           <p>
-            Two things it will not do. It checks one letter at a time, so an answer with two
-            unknowns in it comes back as one it cannot call. And where there are too few values both
-            sides can be worked out at, it says so instead of guessing.
+            Several letters are fine: each one takes its own value at each point, so{" "}
+            <span className="font-mono">a+b</span> is never mistaken for{" "}
+            <span className="font-mono">2a</span>. The one thing it will not do is guess - where
+            there are too few values both sides can be worked out at, it says so instead.
           </p>
         </CardContent>
       </Card>

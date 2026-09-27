@@ -94,10 +94,20 @@ describe("areEquivalent, with a variable", () => {
     expect(check.detail).toContain("too few");
   });
 
-  it("declines more than one variable instead of picking one", () => {
-    const check = areEquivalent("2*x + h", "h + 2*x");
-    expect(check.state).toBe("unsure");
-    expect(check.detail).toContain("one variable at a time");
+  it("handles more than one letter, and keeps them apart", () => {
+    expect(state(areEquivalent("2*x + h", "h + 2*x"))).toBe("correct");
+    expect(state(areEquivalent("(a + b)^2", "a^2 + 2*a*b + b^2"))).toBe("correct");
+    expect(state(areEquivalent("a*b", "b*a"))).toBe("correct");
+    // The trap of giving every letter the same value: these would both pass.
+    expect(state(areEquivalent("a + b", "2*a"))).toBe("incorrect");
+    expect(state(areEquivalent("(a + b)^2", "a^2 + b^2"))).toBe("incorrect");
+  });
+
+  it("names every letter when it reports where they part company", () => {
+    const check = areEquivalent("a + b", "a - b");
+    expect(check.state).toBe("incorrect");
+    expect(check.detail).toContain("a = ");
+    expect(check.detail).toContain("b = ");
   });
 
   it("reports what it could not read, and which side it was", () => {
