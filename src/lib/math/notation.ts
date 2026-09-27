@@ -68,6 +68,7 @@ const SYMBOLS: Record<string, string> = {
   // Operator names, set upright in real LaTeX; the mono face already is.
   gcd: "gcd",
   lcm: "lcm",
+  deg: "deg",
   log: "log",
   ln: "ln",
   exp: "exp",

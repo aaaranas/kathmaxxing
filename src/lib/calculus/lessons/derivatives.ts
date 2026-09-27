@@ -25,7 +25,7 @@ export const derivatives: Lesson = {
         {
           name: "The definition",
           expr: m`f'(x) = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}`,
-          note: m`The difference quotient with $h$ driven to nothing. "$\lim_{h \to 0}$" means: what value does this head towards as $h$ gets small? Not what it equals at $h = 0$ — there it is $\frac{0}{0}$ and says nothing.`,
+          note: m`The difference quotient with $h$ driven to nothing. "$\lim_{h \to 0}$" means: what value does this head towards as $h$ gets small? Not what it equals at $h = 0$ — there it is $\frac{0}{0}$, which the Limits lesson before this one covers properly.`,
         },
         {
           name: "Slope of the tangent",

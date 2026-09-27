@@ -6,7 +6,7 @@
  * and it degrades to its own error state when the request fails.
  */
 
-const VERSION = "kathmaxxing-v6";
+const VERSION = "kathmaxxing-v7";
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 
@@ -25,6 +25,7 @@ const PRECACHE = [
   "/calculus/lines",
   "/calculus/functions",
   "/calculus/graphs",
+  "/calculus/limits",
   "/calculus/derivatives",
   "/calculus/chain-rule",
   "/calculus/graphing-calculator",
