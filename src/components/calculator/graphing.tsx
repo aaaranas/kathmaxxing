@@ -1,20 +1,29 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Crosshair, Minus, Plus, Scan, Trash2, TriangleAlert } from "lucide-react";
+import { Crosshair, Minus, Plus, Scan, Table, Trash2, TriangleAlert } from "lucide-react";
 
 import { Math as Notation } from "@/components/math";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { type Node, parseExpression } from "@/lib/math/parse";
 import { evaluate, valueToNumber } from "@/lib/math/evaluate";
+import { type Features, findFeatures, slopeAt } from "@/lib/math/features";
 import { toNotation } from "@/lib/math/render";
 import {
   type Segment,
   type View,
+  boundsOf,
   formatTick,
   sampleCurve,
+  sampleValues,
   ticksBetween,
   tickStep,
   toGraphX,
@@ -41,18 +50,57 @@ const START: View = { centerX: 0, centerY: 0, unitsPerPixel: 0.025 };
 
 const EXAMPLES = ["2x+1", "x^2-3x+2", "1/x", "sqrt(x)", "sin(x)"] as const;
 
-type Curve = { id: number; source: string };
+type Curve = { id: number; source: string; slope: boolean };
 
 type Compiled = {
   id: number;
   source: string;
+  slope: boolean;
   node: Node | null;
   message: string | null;
   reading: string | null;
 };
 
+/** One value off a curve, or nothing where the curve has none. */
+function valueOf(node: Node, x: number): number | null {
+  const result = evaluate(node, { angle: "rad", scope: { x: { kind: "approx", value: x } } });
+  if (!result.ok) return null;
+  const y = valueToNumber(result.value);
+  return Number.isFinite(y) ? y : null;
+}
+
+/**
+ * Four figures and no trailing zeros, which is enough to name a crossing
+ * without implying the measurement is better than it is.
+ */
+function tidy(value: number): string {
+  return String(Number(value.toPrecision(4)));
+}
+
+/** What was found on a curve, as a sentence rather than a list of numbers. */
+function describeFeatures(features: Features): string | null {
+  const list = (values: number[]) => values.map(tidy).join(", ");
+  const parts: string[] = [];
+
+  if (features.roots.length > 0) {
+    parts.push(`crosses x at ${list(features.roots)}`);
+  }
+  if (features.yIntercept !== null) {
+    parts.push(`crosses y at ${tidy(features.yIntercept)}`);
+  }
+  if (features.vertical.length > 0) {
+    parts.push(`runs away at x = ${list(features.vertical)}`);
+  }
+  if (features.horizontal.length > 0) {
+    parts.push(`flattens towards y = ${list(features.horizontal)}`);
+  }
+
+  return parts.length === 0 ? null : parts.join(" \u00b7 ");
+}
+
 export function GraphingCalculator() {
-  const [curves, setCurves] = useState<Curve[]>([{ id: 1, source: "x^2-3x+2" }]);
+  const [curves, setCurves] = useState<Curve[]>([{ id: 1, source: "x^2-3x+2", slope: false }]);
+  const [marks, setMarks] = useState(true);
   const [view, setView] = useState<View>(START);
   const [size, setSize] = useState({ width: 640, height: 440 });
   const [pointerX, setPointerX] = useState<number | null>(null);
@@ -94,21 +142,55 @@ export function GraphingCalculator() {
       compiled.map((curve) => ({
         id: curve.id,
         segments: curve.node ? sampleCurve(curve.node, view, size) : ([] as Segment[]),
+        // The slope is measured off the curve rather than differentiated, so
+        // anything the calculator can evaluate has one.
+        slope:
+          curve.node && curve.slope
+            ? sampleValues((x) => slopeAt(curve.node as Node, x), view, size)
+            : ([] as Segment[]),
       })),
     [compiled, view, size],
   );
 
+  /*
+   * The points worth marking, found across the part of the curve in view. Done
+   * per view rather than once, so zooming in on a pole finds it to whatever
+   * precision is on screen.
+   */
+  const found = useMemo(() => {
+    if (!marks) return [] as { id: number; features: Features }[];
+    const bounds = boundsOf(view, size);
+    return compiled
+      .filter((curve) => curve.node !== null)
+      .map((curve) => ({
+        id: curve.id,
+        features: findFeatures(curve.node as Node, bounds, {
+          samples: Math.min(720, Math.round(size.width)),
+        }),
+      }));
+  }, [compiled, view, size, marks]);
+
   const grid = useMemo(() => {
     const step = tickStep(view.unitsPerPixel);
-    const xs = ticksBetween(
-      toGraphX(0, view, size),
-      toGraphX(size.width, view, size),
-      step,
-    );
+    const xs = ticksBetween(toGraphX(0, view, size), toGraphX(size.width, view, size), step);
     const yTop = view.centerY + (size.height / 2) * view.unitsPerPixel;
     const yBottom = view.centerY - (size.height / 2) * view.unitsPerPixel;
     return { step, xs, ys: ticksBetween(yBottom, yTop, step) };
   }, [view, size]);
+
+  const table = useMemo(() => {
+    // One row per gridline across the view, which is already the spacing a
+    // person would have chosen, capped at what can be read without scrolling.
+    const xs = grid.xs.slice(0, 12);
+    return xs.map((x) => ({
+      x,
+      values: compiled.map((curve) => ({
+        id: curve.id,
+        y: curve.node ? valueOf(curve.node, x) : null,
+        slope: curve.node && curve.slope ? slopeAt(curve.node, x) : null,
+      })),
+    }));
+  }, [grid, compiled]);
 
   const readout = useMemo(() => {
     if (pointerX === null) return null;
@@ -132,7 +214,13 @@ export function GraphingCalculator() {
 
   function addCurve() {
     if (curves.length >= STROKES.length) return;
-    setCurves((list) => [...list, { id: nextId.current++, source: "" }]);
+    setCurves((list) => [...list, { id: nextId.current++, source: "", slope: false }]);
+  }
+
+  function toggleSlope(id: number) {
+    setCurves((list) =>
+      list.map((curve) => (curve.id === id ? { ...curve, slope: !curve.slope } : curve)),
+    );
   }
 
   function removeCurve(id: number) {
@@ -231,6 +319,25 @@ export function GraphingCalculator() {
                   <line x1={axisY} y1={0} x2={axisY} y2={size.height} />
                 </g>
 
+                {/*
+                  The lines the curve never reaches, drawn under it: dashed,
+                  and lighter than everything that is actually the graph.
+                */}
+                <g stroke="var(--foreground)" strokeWidth={1} strokeDasharray="5 5" opacity={0.45}>
+                  {found.flatMap(({ id, features }) => [
+                    ...features.vertical.map((value) => {
+                      const x = toScreenX(value, view, size);
+                      return (
+                        <line key={`va${id}-${value}`} x1={x} y1={0} x2={x} y2={size.height} />
+                      );
+                    }),
+                    ...features.horizontal.map((value) => {
+                      const y = toScreenY(value, view, size);
+                      return <line key={`ha${id}-${value}`} x1={0} y1={y} x2={size.width} y2={y} />;
+                    }),
+                  ])}
+                </g>
+
                 {plotted.map((curve, index) => (
                   <g
                     key={curve.id}
@@ -243,8 +350,36 @@ export function GraphingCalculator() {
                     {curve.segments.map((segment, position) => (
                       <path key={position} d={toPath(segment)} />
                     ))}
+                    {/* The slope, same pattern at half the weight. */}
+                    {curve.slope.map((segment, position) => (
+                      <path key={`s${position}`} d={toPath(segment)} strokeWidth={1} />
+                    ))}
                   </g>
                 ))}
+
+                {/* Crossings, on top of the curves so they are not buried. */}
+                <g fill="var(--paper)" stroke="var(--foreground)" strokeWidth={1.75}>
+                  {found.flatMap(({ id, features }) => [
+                    ...features.roots.map((value) => (
+                      <circle
+                        key={`r${id}-${value}`}
+                        cx={toScreenX(value, view, size)}
+                        cy={axisX}
+                        r={3.5}
+                      />
+                    )),
+                    ...(features.yIntercept === null
+                      ? []
+                      : [
+                          <circle
+                            key={`y${id}`}
+                            cx={axisY}
+                            cy={toScreenY(features.yIntercept, view, size)}
+                            r={3.5}
+                          />,
+                        ]),
+                  ])}
+                </g>
 
                 {/*
                   Painting the stroke first puts a halo of paper behind each
@@ -312,6 +447,22 @@ export function GraphingCalculator() {
               </svg>
             </div>
 
+            {marks && found.some(({ features }) => describeFeatures(features)) && (
+              <ul className="flex flex-col gap-1 rounded-md bg-desk px-3 py-2 text-xs">
+                {found.map(({ id, features }, index) => {
+                  const said = describeFeatures(features);
+                  return said === null ? null : (
+                    <li key={id} className="flex flex-wrap items-baseline gap-1.5">
+                      <span className="font-mono">
+                        y<sub>{index + 1}</sub>
+                      </span>
+                      <span className="tnum">{said}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="flex items-center gap-1.5 text-xs">
                 <Crosshair aria-hidden className="size-3 shrink-0" />
@@ -321,8 +472,7 @@ export function GraphingCalculator() {
                     {readout.values.map((value, index) =>
                       value.y === null ? null : (
                         <span key={value.id}>
-                          {"  "}y
-                          <sub>{index + 1}</sub> = {formatTick(value.y, grid.step / 100)}
+                          {"  "}y<sub>{index + 1}</sub> = {formatTick(value.y, grid.step / 100)}
                         </span>
                       ),
                     )}
@@ -333,6 +483,19 @@ export function GraphingCalculator() {
               </p>
 
               <div className="flex items-center gap-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  aria-pressed={marks}
+                  onClick={() => setMarks((on) => !on)}
+                  className={cn(
+                    "h-8 gap-1.5 border border-line px-2 text-xs text-foreground hover:bg-plate",
+                    marks ? "bg-plate" : "bg-paper",
+                  )}
+                >
+                  Marks
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"
@@ -418,6 +581,20 @@ export function GraphingCalculator() {
                     aria-invalid={curve.message !== null}
                     className="tnum h-9 flex-1 border-line bg-desk font-mono"
                   />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-pressed={curve.slope}
+                    aria-label={`Show the slope of function ${index + 1}`}
+                    onClick={() => toggleSlope(curve.id)}
+                    className={cn(
+                      "size-8 shrink-0 border border-line font-mono text-xs text-foreground hover:bg-plate",
+                      curve.slope ? "bg-plate" : "bg-paper",
+                    )}
+                  >
+                    y&prime;
+                  </Button>
                   {curves.length > 1 && (
                     <Button
                       type="button"
@@ -463,6 +640,83 @@ export function GraphingCalculator() {
               Add a function
             </Button>
           )}
+
+          <Accordion type="single" collapsible className="w-full border-t border-line">
+            <AccordionItem value="table" className="border-b-0">
+              <AccordionTrigger className="gap-2 py-3 text-left text-sm hover:no-underline">
+                <span className="flex items-center gap-2">
+                  <Table aria-hidden className="size-4 shrink-0" />
+                  Table of values
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <p className="mb-2 text-xs">
+                  Taken off the gridlines that are in view, so panning and zooming change what is in
+                  the table.
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left">
+                    <thead>
+                      <tr>
+                        <th
+                          scope="col"
+                          className="border-b border-line px-2 py-1.5 font-mono text-xs font-medium"
+                        >
+                          x
+                        </th>
+                        {compiled.map((curve, index) => (
+                          <th
+                            key={curve.id}
+                            scope="col"
+                            className="border-b border-line px-2 py-1.5 font-mono text-xs font-medium"
+                          >
+                            y<sub>{index + 1}</sub>
+                            {curve.slope && (
+                              <>
+                                {" / y"}
+                                <sub>{index + 1}</sub>
+                                &prime;
+                              </>
+                            )}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {table.map((row) => (
+                        <tr key={row.x}>
+                          <th
+                            scope="row"
+                            className="tnum border-b border-line px-2 py-1.5 font-mono text-sm font-medium"
+                          >
+                            {formatTick(row.x, grid.step)}
+                          </th>
+                          {row.values.map((value) => (
+                            <td
+                              key={value.id}
+                              className="tnum border-b border-line px-2 py-1.5 font-mono text-sm"
+                            >
+                              {value.y === null ? (
+                                <span aria-label="No value here">&mdash;</span>
+                              ) : (
+                                formatTick(value.y, grid.step / 100)
+                              )}
+                              {value.slope !== null && (
+                                <span className="opacity-70">
+                                  {" / "}
+                                  {formatTick(value.slope, grid.step / 100)}
+                                </span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
 
           <div className="flex flex-col gap-1.5 border-t border-line pt-3">
             <p className="text-xs">Try one:</p>

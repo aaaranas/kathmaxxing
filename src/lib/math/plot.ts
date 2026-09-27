@@ -114,9 +114,32 @@ export function sampleCurve(
   size: Size,
   options: SampleOptions = {},
 ): Segment[] {
-  const step = options.step ?? 1;
   const variable = options.variable ?? "x";
   const angle = options.angle ?? "rad";
+  return sampleValues(
+    (x) => {
+      const result = evaluate(node, { angle, scope: { [variable]: { kind: "approx", value: x } } });
+      if (!result.ok) return null;
+      const y = valueToNumber(result.value);
+      return Number.isFinite(y) ? y : null;
+    },
+    view,
+    size,
+    options.step,
+  );
+}
+
+/**
+ * The same sampling, for a curve that is measured rather than evaluated - the
+ * slope of another curve, say, which has no expression of its own.
+ */
+export function sampleValues(
+  valueAt: (x: number) => number | null,
+  view: View,
+  size: Size,
+  stepSize = 1,
+): Segment[] {
+  const step = stepSize;
 
   // Far enough off screen that the curve is out of sight either way, so a gap
   // there cannot be seen - but near enough that a steep line still joins up.
@@ -132,18 +155,9 @@ export function sampleCurve(
 
   for (let screenX = 0; screenX <= size.width; screenX += step) {
     const x = toGraphX(screenX, view, size);
-    const result = evaluate(node, {
-      angle,
-      scope: { [variable]: { kind: "approx", value: x } },
-    });
+    const y = valueAt(x);
 
-    if (!result.ok) {
-      endSegment();
-      continue;
-    }
-
-    const y = valueToNumber(result.value);
-    if (!Number.isFinite(y)) {
+    if (y === null) {
       endSegment();
       continue;
     }
@@ -169,7 +183,13 @@ export function toPath(segment: Segment): string {
 }
 
 /** Zoom about a fixed screen point, so the spot under the cursor stays put. */
-export function zoomAt(view: View, size: Size, screenX: number, screenY: number, factor: number): View {
+export function zoomAt(
+  view: View,
+  size: Size,
+  screenX: number,
+  screenY: number,
+  factor: number,
+): View {
   const anchorX = toGraphX(screenX, view, size);
   const anchorY = toGraphY(screenY, view, size);
   const unitsPerPixel = clampScale(view.unitsPerPixel * factor);

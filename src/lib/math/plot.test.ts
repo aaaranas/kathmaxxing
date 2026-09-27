@@ -6,6 +6,7 @@ import {
   boundsOf,
   formatTick,
   sampleCurve,
+  sampleValues,
   ticksBetween,
   tickStep,
   toGraphX,
@@ -128,5 +129,21 @@ describe("sampling a curve", () => {
   it("reads a variable other than x when asked", () => {
     const segments = sampleCurve(nodeOf("2t"), VIEW, SIZE, { variable: "t" });
     expect(segments).toHaveLength(1);
+  });
+});
+
+describe("sampleValues", () => {
+  const view: View = { centerX: 0, centerY: 0, unitsPerPixel: 0.05 };
+  const size = { width: 200, height: 200 };
+
+  it("draws a run of points for a curve with no expression behind it", () => {
+    const segments = sampleValues((x) => 2 * x, view, size, 10);
+    expect(segments.length).toBe(1);
+    expect(segments[0].length).toBeGreaterThan(10);
+  });
+
+  it("breaks where there is no value, the same as a curve does", () => {
+    const segments = sampleValues((x) => (Math.abs(x) < 1 ? null : 1 / x), view, size, 5);
+    expect(segments.length).toBe(2);
   });
 });
