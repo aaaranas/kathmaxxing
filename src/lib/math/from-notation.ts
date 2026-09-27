@@ -36,7 +36,16 @@ const PLAIN = /[0-9a-zA-Z+\-*/^(). ]/;
 
 function convertText(value: string): string | null {
   let out = "";
+  // Bars come through as plain text, because short contents never need a
+  // drawn fence. They pair off left to right into the function that means
+  // them; anything that does not pair up fails the parse at the end.
+  let openBar = true;
   for (const character of value) {
+    if (character === "|") {
+      out += openBar ? "abs(" : ")";
+      openBar = !openBar;
+      continue;
+    }
     const mapped = CHARACTERS[character];
     if (mapped !== undefined) {
       out += mapped;
