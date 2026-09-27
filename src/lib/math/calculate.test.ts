@@ -240,3 +240,14 @@ describe("calculate", () => {
     expect(answer("2−5")).toBe("-3");
   });
 });
+
+describe("a variable in front of a bracket", () => {
+  it("multiplies when the name is one letter", () => {
+    expect(reading("x(3x+2)")).toBe(reading("x*(3x+2)"));
+    expect(reading("2a(a-1)")).toBe(reading("2*a*(a-1)"));
+  });
+
+  it("still names a misspelled function", () => {
+    expect(answer("sek(2)")).toBe('"sek" is not a function here.');
+  });
+});

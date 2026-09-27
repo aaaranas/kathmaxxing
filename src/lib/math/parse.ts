@@ -197,7 +197,13 @@ export function parseExpression(input: string): ParseResult {
         // Not a constant and not a function, so it is a variable. Whether it
         // has a value is the evaluator's problem: the scientific calculator
         // supplies none and reports it, the grapher supplies x.
-        if (nextIs("(")) throw new ParseError(`"${name}" is not a function here.`);
+        // A single letter is never a function in this grammar, so x(3x + 2)
+        // multiplies the way it looks - the implied product below picks it up.
+        // A longer name in front of a bracket is a function that was meant and
+        // misspelled, and saying so beats quietly multiplying by an unknown.
+        if (nextIs("(") && name.length > 1) {
+          throw new ParseError(`"${name}" is not a function here.`);
+        }
         return { kind: "variable", name };
       }
 
