@@ -13,7 +13,7 @@ const ICONS = {
   practice: ListOrdered,
 } as const;
 
-function SectionBody({ section }: { section: Section }) {
+function SectionBody({ section, lesson }: { section: Section; lesson: string }) {
   if (section.kind === "rules") {
     return (
       <div className="flex flex-col gap-3">
@@ -67,7 +67,7 @@ function SectionBody({ section }: { section: Section }) {
 
   if (section.kind === "examples") return <ExampleList examples={section.examples} />;
   if (section.kind === "traps") return <TrapList traps={section.traps} />;
-  return <PracticeList problems={section.problems} />;
+  return <PracticeList problems={section.problems} lesson={lesson} section={section.id} />;
 }
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
@@ -76,7 +76,11 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       {lesson.sections.map((section) => {
         const Icon = ICONS[section.kind];
         return (
-          <Card key={section.id} id={section.id} className="scroll-mt-4 border-0 ring-1 ring-foreground/15">
+          <Card
+            key={section.id}
+            id={section.id}
+            className="scroll-mt-4 border-0 ring-1 ring-foreground/15"
+          >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Icon aria-hidden className="size-4 shrink-0" />
@@ -89,7 +93,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               )}
             </CardHeader>
             <CardContent>
-              <SectionBody section={section} />
+              <SectionBody section={section} lesson={lesson.slug} />
             </CardContent>
           </Card>
         );

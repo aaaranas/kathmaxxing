@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ChartSpline, FileText } from "lucide-react";
 
+import { PracticeProgress } from "@/components/lesson/practice-progress";
 import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { CALCULUS_LESSONS } from "@/lib/calculus";
+import { lessonPracticeKeys } from "@/lib/practice/keys";
 
 export const metadata: Metadata = {
   title: "Calculus",
@@ -63,6 +65,7 @@ export default function Page() {
                     <FileText aria-hidden className="size-3 shrink-0" />
                     {lesson.source}
                   </span>
+                  <PracticeProgress keys={lessonPracticeKeys(lesson)} />
                 </span>
 
                 <ArrowRight
