@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SUBJECTS } from "@/lib/subjects";
+import { SUBJECTS, TOOLS } from "@/lib/subjects";
 
 export default function Page() {
   return (
@@ -13,6 +13,35 @@ export default function Page() {
         title="Subjects"
         description="One shelf per subject. Everything inside shows its working — the rules first, then a solution for every kind of problem, written out line by line."
       />
+
+      <ul className="mb-4 grid gap-3 sm:grid-cols-2">
+        {TOOLS.map((tool) => {
+          const Icon = tool.icon;
+          return (
+            <li key={tool.id}>
+              <Link
+                href={tool.href}
+                className="group flex h-full items-center gap-3 rounded-xl bg-plate px-4 py-3 ring-1 ring-foreground/15 hover:bg-plate-strong"
+              >
+                <span
+                  aria-hidden
+                  className="flex size-8 shrink-0 items-center justify-center rounded-md bg-paper"
+                >
+                  <Icon className="size-4" />
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="text-sm font-medium">{tool.name}</span>
+                  <span className="text-xs">{tool.blurb}</span>
+                </span>
+                <ArrowRight
+                  aria-hidden
+                  className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
 
       <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
         {SUBJECTS.map((subject) => {

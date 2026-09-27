@@ -20,6 +20,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { name: "Algebra", url: "/algebra" },
       { name: "Calculus", url: "/calculus" },
       { name: "Graphing calculator", url: "/calculus/graphing-calculator" },
+      { name: "Check my answer", url: "/check" },
     ],
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

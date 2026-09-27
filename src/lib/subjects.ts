@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Binary, LineChart, Sigma } from "lucide-react";
+import { BadgeCheck, Binary, LineChart, Sigma } from "lucide-react";
 
 import { ALGEBRA_LESSONS } from "@/lib/algebra";
 import { CALCULUS_LESSONS } from "@/lib/calculus";
@@ -101,3 +101,25 @@ export const SUBJECTS: Subject[] = [
 export function findSubject(id: string): Subject | undefined {
   return SUBJECTS.find((subject) => subject.id === id);
 }
+
+/**
+ * Tools that belong to no one subject. They work off whatever she types rather
+ * than off a lesson, so they sit above the shelf instead of inside a card.
+ */
+export type Tool = {
+  id: string;
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  blurb: string;
+};
+
+export const TOOLS: Tool[] = [
+  {
+    id: "check",
+    name: "Check my answer",
+    href: "/check",
+    icon: BadgeCheck,
+    blurb: "Have your own answer marked - a simplification, a derivative or a limit.",
+  },
+];
