@@ -71,9 +71,13 @@ const SYMBOLS: Record<string, string> = {
   log: "log",
   ln: "ln",
   exp: "exp",
+  lim: "lim",
   sin: "sin",
   cos: "cos",
   tan: "tan",
+  sec: "sec",
+  csc: "csc",
+  cot: "cot",
   // Sizing hints from full LaTeX that this renderer has no use for; listed so
   // notation pasted in from elsewhere does not print their names.
   big: "",

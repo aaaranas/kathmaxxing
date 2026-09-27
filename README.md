@@ -69,12 +69,19 @@ Mono's own measured metrics so the overbar lands on the tip of the sign. And `\l
 only *drawn* when something inside it is taller than a line — otherwise it falls back to a typed
 bracket, so drawn and typed brackets never sit side by side in the same expression.
 
-### Calculus — lines, functions, graphs
+### Calculus — lines, functions, graphs, derivatives
 
-Three topics laid out the same way as the algebra ones: **Lines** (slope, the three forms, parallel
+Five topics laid out the same way as the algebra ones: **Lines** (slope, the three forms, parallel
 and perpendicular), **Functions** (notation, domain and range, composition, and the difference
-quotient that a derivative is built from), and **Graphs** (intercepts, symmetry, the six parent
-shapes, and transformations).
+quotient that a derivative is built from), **Graphs** (intercepts, symmetry, the six parent shapes,
+transformations and asymptotes), **Derivatives** (first principles, then the power, product and
+quotient rules, tangent lines and higher derivatives), and **The Chain Rule** (spotting the layers,
+then stacking it with the other rules).
+
+Every derivative those last two lessons claim is checked in `src/lib/calculus/derivatives.test.ts`
+against a numerical derivative of the original function. A wrong sign or a mistyped exponent reads
+perfectly plausibly on the page and cannot be eyeballed, so the arithmetic is verified rather than
+trusted — the test list mirrors the lesson content by hand and has to be edited alongside it.
 
 #### Graphing calculator
 
