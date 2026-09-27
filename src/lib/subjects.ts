@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BadgeCheck, Binary, LineChart, Sigma } from "lucide-react";
+import { BadgeCheck, Binary, LineChart, Search, Sigma } from "lucide-react";
 
 import { ALGEBRA_LESSONS } from "@/lib/algebra";
 import { CALCULUS_LESSONS } from "@/lib/calculus";
@@ -121,5 +121,12 @@ export const TOOLS: Tool[] = [
     href: "/check",
     icon: BadgeCheck,
     blurb: "Have your own answer marked - a simplification, a derivative or a limit.",
+  },
+  {
+    id: "search",
+    name: "Search",
+    href: "/search",
+    icon: Search,
+    blurb: "Find a rule, a worked solution or a problem anywhere on the shelf.",
   },
 ];

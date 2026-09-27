@@ -408,6 +408,38 @@ export function splitProse(text: string): ProseRun[] {
 }
 
 /**
+ * The characters an expression draws, run together: `\frac{3}{10}` comes back
+ * as `3/10`. Not for reading aloud - `describeMath` does that - but for
+ * comparing what is written and for making notation searchable as text.
+ */
+export function plainMath(source: string): string {
+  const write = (nodes: MathNode[]): string => nodes.map(one).join("");
+
+  const one = (node: MathNode): string => {
+    switch (node.kind) {
+      case "text":
+      case "prose":
+        return node.value;
+      case "sup":
+        return "^" + write(node.body);
+      case "sub":
+        return "_" + write(node.body);
+      case "frac":
+        return write(node.num) + "/" + write(node.den);
+      case "sqrt":
+        return (node.index === null ? "sqrt" : "root" + write(node.index)) + write(node.radicand);
+      case "fence": {
+        const open = node.open === "." ? "" : node.open;
+        const close = node.close === "." ? "" : node.close;
+        return open + write(node.body) + close;
+      }
+    }
+  };
+
+  return write(parseMath(source));
+}
+
+/**
  * A flat reading of an expression, used for `aria-label` and for the copy the
  * screen reader gets instead of a pile of nested spans.
  */
@@ -430,7 +462,11 @@ export function describeMath(nodes: MathNode[]): string {
         case "sqrt":
           return node.index === null
             ? " the square root of " + describeMath(node.radicand) + " "
-            : " the " + describeMath(node.index) + "th root of " + describeMath(node.radicand) + " ";
+            : " the " +
+                describeMath(node.index) +
+                "th root of " +
+                describeMath(node.radicand) +
+                " ";
       }
     })
     .join("");

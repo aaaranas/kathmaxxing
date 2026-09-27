@@ -30,6 +30,7 @@ const PRECACHE = [
   "/calculus/chain-rule",
   "/calculus/graphing-calculator",
   "/check",
+  "/search",
   "/manifest.webmanifest",
   "/icon-192.png",
   "/icon-512.png",

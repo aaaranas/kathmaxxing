@@ -1,6 +1,6 @@
 import { type Check, areEquivalent } from "@/lib/math/check";
 import { afterLabel, notationToExpression } from "@/lib/math/from-notation";
-import { type MathNode, parseMath } from "@/lib/math/notation";
+import { plainMath } from "@/lib/math/notation";
 
 /**
  * Marking a practice answer against the one written in the lesson.
@@ -27,32 +27,6 @@ export type Answer =
 /** Past this, an answer is prose or a list rather than a thing to type. */
 const WORDS_LIMIT = 12;
 
-function flattenNodes(nodes: MathNode[]): string {
-  return nodes.map(flatten).join("");
-}
-
-/** The notation as the characters it draws, for the literal comparison. */
-function flatten(node: MathNode): string {
-  switch (node.kind) {
-    case "text":
-    case "prose":
-      return node.value;
-    case "sup":
-      return "^" + flattenNodes(node.body);
-    case "sub":
-      return "_" + flattenNodes(node.body);
-    case "frac":
-      return flattenNodes(node.num) + "/" + flattenNodes(node.den);
-    case "sqrt":
-      return "sqrt" + flattenNodes(node.radicand);
-    case "fence": {
-      const open = node.open === "." ? "" : node.open;
-      const close = node.close === "." ? "" : node.close;
-      return open + flattenNodes(node.body) + close;
-    }
-  }
-}
-
 /**
  * One spelling for the several ways of writing the same thing: the infinities,
  * the minus signs, and upper against lower case. Spaces go entirely, so
@@ -71,7 +45,7 @@ export function readAnswer(notation: string): Answer {
   const expression = notationToExpression(notation);
   if (expression !== null) return { kind: "expression", source: expression };
 
-  const written = flattenNodes(parseMath(notation));
+  const written = plainMath(notation);
   const normalized = normalizeWords(written);
   if (normalized.length > 0 && normalized.length <= WORDS_LIMIT) {
     return { kind: "words", value: normalized };

@@ -21,6 +21,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { name: "Calculus", url: "/calculus" },
       { name: "Graphing calculator", url: "/calculus/graphing-calculator" },
       { name: "Check my answer", url: "/check" },
+      { name: "Search", url: "/search" },
     ],
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
