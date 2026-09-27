@@ -82,9 +82,20 @@ function tokenize(source: string): Token[] | string {
     }
 
     if (/[a-zA-Z]/.test(char)) {
-      const match = /^[a-zA-Z]+/.exec(source.slice(i))!;
-      tokens.push({ type: "name", literal: match[0].toLowerCase(), at: i });
-      i += match[0].length;
+      const run = /^[a-zA-Z]+/.exec(source.slice(i))![0].toLowerCase();
+      // A run of letters the grammar has no name for is a product of single
+      // letters, so xy is x times y and ab^2 is a times b squared - splitting
+      // here rather than in the parser is what keeps the power on the b.
+      // A bracket straight after the run means it was meant as a function
+      // call, right or misspelled, so that run is left whole to be reported.
+      const callable = source[i + run.length] === "(";
+      const known = CONSTANTS.has(run) || FUNCTIONS[run] !== undefined;
+      if (run.length > 1 && !callable && !known) {
+        for (const letter of run) tokens.push({ type: "name", literal: letter, at: i });
+      } else {
+        tokens.push({ type: "name", literal: run, at: i });
+      }
+      i += run.length;
       continue;
     }
 

@@ -251,3 +251,17 @@ describe("a variable in front of a bracket", () => {
     expect(answer("sek(2)")).toBe('"sek" is not a function here.');
   });
 });
+
+describe("a run of letters", () => {
+  it("multiplies, the way xy is written by hand", () => {
+    expect(reading("xy")).toBe(reading("x*y"));
+    expect(reading("3ab^2")).toBe(reading("3*a*b^2"));
+    expect(reading("2xye")).toBe(reading("2*x*y*e"));
+  });
+
+  it("leaves the names that mean something alone", () => {
+    expect(reading("pi")).toBe(reading("pi"));
+    expect(answer("2pi")).toBe(answer("2*pi"));
+    expect(answer("sin(0)")).toBe("0");
+  });
+});
