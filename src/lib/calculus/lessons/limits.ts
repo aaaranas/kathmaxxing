@@ -5,7 +5,7 @@ const m = String.raw;
 export const limits: Lesson = {
   slug: "limits",
   title: "Limits",
-  blurb: "What a function heads towards — the techniques in order, and how to read an infinite one.",
+  blurb: "What a function heads towards, the techniques in order, and where a curve breaks.",
   source: "Calculus — limits and continuity",
   summary:
     "A limit asks where a function is heading, not where it arrives. That distinction is the whole " +
@@ -466,10 +466,176 @@ export const limits: Lesson = {
       ],
     },
     {
+      kind: "rules",
+      id: "continuity",
+      title: "Continuity",
+      intro:
+        "Informally, a function is continuous where you can draw it without lifting the pencil. " +
+        "The definition turns that into three things to check, and all three can fail separately.",
+      rules: [
+        {
+          name: "Continuous at a point",
+          expr: m`f(a) \text{ defined}, \quad \lim_{x \to a} f(x) \text{ exists}, \quad \text{and they are equal}`,
+          note: "Three conditions, checked in that order. A limit can exist perfectly well at a point where the function has no value at all, and that is still a discontinuity.",
+        },
+        {
+          name: "Removable discontinuity",
+          expr: m`\lim_{x \to a} f(x) \text{ exists but } \ne f(a)`,
+          note: m`A hole. Redefining the single value $f(a)$ repairs it, which is why it is called removable — the rest of the curve is untouched.`,
+        },
+        {
+          name: "Jump discontinuity",
+          expr: m`\lim_{x \to a^{-}} f(x) \ne \lim_{x \to a^{+}} f(x)`,
+          note: "Both one-sided limits exist and disagree, so the two-sided limit does not exist. No single value of f(a) can fix it.",
+        },
+        {
+          name: "Infinite discontinuity",
+          expr: m`\lim_{x \to a} f(x) = \pm\infty`,
+          note: "A vertical asymptote. The function runs off the page rather than jumping.",
+        },
+        {
+          name: "What is continuous everywhere",
+          expr: m`\text{polynomials}, \; \sin x, \; \cos x, \; e^{x}`,
+          note: m`Rational functions are continuous except where the denominator vanishes; roots and $\ln x$ are continuous throughout their own domains. For all of these, the limit is found by substitution.`,
+        },
+        {
+          name: "Squeeze theorem",
+          expr: m`g(x) \le f(x) \le h(x) \text{ and } \lim g = \lim h = L \Rightarrow \lim f = L`,
+          note: m`Trap a function between two others that meet. It is the only way to handle something like $x^{2}\sin\frac{1}{x}$, where the oscillation never settles but its size shrinks to nothing.`,
+        },
+        {
+          name: "Intermediate Value Theorem",
+          expr: m`f \text{ continuous on } \left[a, b\right] \Rightarrow f \text{ takes every value between } f(a) \text{ and } f(b)`,
+          note: "The standard way to prove a root exists without finding it: if the function is negative at one end and positive at the other, it crossed zero somewhere in between.",
+        },
+      ],
+    },
+    {
+      kind: "examples",
+      id: "continuity-work",
+      title: "Worked examples \u2014 continuity",
+      examples: [
+        {
+          id: "ct-1",
+          prompt: m`\text{Is } f(x) = \frac{x^{2} - 9}{x - 3} \text{ continuous at } x = 3 \text{?}`,
+          pattern: "Removable discontinuity",
+          tell: "Substituting gives 0/0, so the function has no value there. Check whether the limit exists anyway.",
+          steps: [
+            {
+              expr: m`f(3) = \frac{0}{0} \text{ undefined}`,
+              reason: "The first condition already fails, so the function is not continuous at 3.",
+            },
+            {
+              expr: m`\frac{x^{2} - 9}{x - 3} = \frac{(x - 3)(x + 3)}{x - 3} = x + 3`,
+              reason: "Factor and cancel. Valid for every x except 3 itself, which is all a limit needs.",
+            },
+            {
+              expr: m`\lim_{x \to 3} f(x) = 6`,
+              reason: "The limit exists even though the value does not.",
+            },
+            {
+              expr: m`\text{define } f(3) = 6 \Rightarrow \text{continuous}`,
+              reason: "A single missing value, so the discontinuity is removable.",
+            },
+          ],
+          answer: m`\text{Not continuous at } 3 \text{; a removable hole}`,
+          check: m`The graph is the line $y = x + 3$ with one point punched out at $(3, 6)$. Cancelling simplified the expression but could not give the original function a value it never had.`,
+        },
+        {
+          id: "ct-2",
+          prompt: m`\text{Find } k \text{ so that } f(x) = x^{2} - 1 \text{ for } x < 3 \text{ and } f(x) = kx + 2 \text{ for } x \ge 3 \text{ is continuous}`,
+          pattern: "Matching a piecewise function at its boundary",
+          tell: "Each piece is continuous on its own, so the only question is whether they meet. Set the two one-sided limits equal.",
+          steps: [
+            {
+              expr: m`\lim_{x \to 3^{-}} f(x) = 9 - 1 = 8`,
+              reason: "From the left the top rule applies.",
+            },
+            {
+              expr: m`\lim_{x \to 3^{+}} f(x) = 3k + 2`,
+              reason: "From the right the bottom rule applies, and this is also f(3) itself.",
+            },
+            {
+              expr: m`3k + 2 = 8`,
+              reason: "For continuity the two must agree. The third condition then holds automatically.",
+            },
+            {
+              expr: m`k = 2`,
+              reason: "Solve.",
+            },
+          ],
+          answer: m`k = 2`,
+          check: m`With $k = 2$ the right piece gives $f(3) = 8$, matching the left-hand limit. Any other $k$ leaves a jump.`,
+        },
+        {
+          id: "ct-3",
+          prompt: m`\text{Evaluate } \lim_{x \to 0} x^{2}\sin\frac{1}{x}`,
+          pattern: "Squeeze theorem",
+          tell: "The sine oscillates faster and faster and never settles, so no limit law applies. But it stays bounded, and that is enough.",
+          steps: [
+            {
+              expr: m`-1 \le \sin\frac{1}{x} \le 1`,
+              reason: "True for every x, however wildly the inside behaves.",
+            },
+            {
+              expr: m`-x^{2} \le x^{2}\sin\frac{1}{x} \le x^{2}`,
+              reason: m`Multiply through by $x^{2}$, which is positive, so the inequalities keep their direction.`,
+            },
+            {
+              expr: m`\lim_{x \to 0}\left(-x^{2}\right) = 0 \text{ and } \lim_{x \to 0} x^{2} = 0`,
+              reason: "Both bounds head to the same place.",
+            },
+            {
+              expr: m`\lim_{x \to 0} x^{2}\sin\frac{1}{x} = 0`,
+              reason: "Squeezed between two functions that meet at 0, the middle has nowhere else to go.",
+            },
+          ],
+          answer: m`0`,
+          check: m`Note $\lim_{x \to 0}\sin\frac{1}{x}$ on its own does not exist. The $x^{2}$ is what crushes the oscillation, and without it the squeeze has no bounds to work with.`,
+        },
+        {
+          id: "ct-4",
+          prompt: m`\text{Show that } x^{3} - x - 1 = 0 \text{ has a root between 1 and 2}`,
+          pattern: "Intermediate Value Theorem",
+          tell: "Asked to show a root exists, not to find it. Evaluate at both ends and look for a sign change.",
+          steps: [
+            {
+              expr: m`f(x) = x^{3} - x - 1 \text{ is a polynomial, so continuous}`,
+              reason: "The theorem's hypothesis is satisfied on any interval.",
+            },
+            {
+              expr: m`f(1) = 1 - 1 - 1 = -1 < 0`,
+              reason: "Negative at the left end.",
+            },
+            {
+              expr: m`f(2) = 8 - 2 - 1 = 5 > 0`,
+              reason: "Positive at the right end.",
+            },
+            {
+              expr: m`0 \text{ lies between } -1 \text{ and } 5`,
+              reason: "So the theorem guarantees some c in (1, 2) with f(c) = 0.",
+            },
+          ],
+          answer: m`\text{a root exists in } (1, 2)`,
+          check: "The theorem gives existence only — it does not say where the root is or that there is just one. Narrowing it down means testing more points, which is exactly how a numerical root-finder works.",
+        },
+      ],
+    },
+    {
       kind: "traps",
       id: "traps",
       title: "Where this goes wrong",
       traps: [
+        {
+          wrong: m`\lim_{x \to a} f(x) \text{ exists} \Rightarrow f \text{ continuous at } a`,
+          right: m`\text{also need } f(a) \text{ defined and equal to the limit}`,
+          why: m`$\frac{x^{2} - 9}{x - 3}$ has a perfectly good limit of 6 at $x = 3$ and no value there at all. A limit describes the approach; continuity also demands the function turn up.`,
+        },
+        {
+          wrong: m`\text{the Intermediate Value Theorem finds the root}`,
+          right: m`\text{it only proves one exists}`,
+          why: "A sign change guarantees a crossing somewhere in between, but says nothing about where, and nothing about whether there is only one.",
+        },
         {
           wrong: m`\frac{0}{0} \;\Rightarrow\; \text{the limit does not exist}`,
           right: m`\frac{0}{0} \;\Rightarrow\; \text{keep going}`,
@@ -508,6 +674,21 @@ export const limits: Lesson = {
       title: "Practice",
       intro: "Substitute first every time, and let what comes out pick the technique.",
       problems: [
+        {
+          prompt: m`\text{Find } k \text{ so } f(x) = 2x \text{ for } x < 1, \; f(x) = x^{2} + k \text{ for } x \ge 1 \text{ is continuous}`,
+          answer: m`k = 1`,
+          hint: m`Left limit is 2, right value is $1 + k$. Set them equal.`,
+        },
+        {
+          prompt: m`\lim_{x \to 0} x\cos\frac{1}{x}`,
+          answer: m`0`,
+          hint: m`Squeeze it: $-\left|x\right| \le x\cos\frac{1}{x} \le \left|x\right|$.`,
+        },
+        {
+          prompt: m`\text{Classify the discontinuity of } f(x) = \frac{1}{x - 2} \text{ at } x = 2`,
+          answer: m`\text{infinite}`,
+          hint: "The one-sided limits run off in opposite directions, so it is a vertical asymptote rather than a hole.",
+        },
         {
           prompt: m`\lim_{x \to 4} \frac{x^{2} - 16}{x - 4}`,
           answer: m`8`,

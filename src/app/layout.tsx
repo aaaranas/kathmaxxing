@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | kathmaxxing",
   },
   description:
-    "Study notes that show their working. Number bases in computer science, and exponents, radicals and factoring in algebra — every problem solved line by line.",
+    "Study notes that show their working. Number bases, algebra, and differential calculus from limits through to partial derivatives — every problem solved line by line.",
   applicationName: "kathmaxxing",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

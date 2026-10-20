@@ -12,7 +12,7 @@ import { lessonPracticeKeys } from "@/lib/practice/keys";
 export const metadata: Metadata = {
   title: "Calculus",
   description:
-    "Lines, functions and graphs — the groundwork calculus is built on, with a worked solution for every kind of problem.",
+    "Differential calculus end to end: lines, functions and graphs, limits and continuity, every differentiation rule, and the applications — with a worked solution for every kind of problem.",
 };
 
 export default function Page() {
@@ -21,7 +21,7 @@ export default function Page() {
       <SiteHeader
         crumbs={[{ label: "Subjects", href: "/" }, { label: "Calculus" }]}
         title="Calculus"
-        description="The groundwork first: lines, functions, and reading a graph off its rule. Each topic opens with the rules, then the order to apply them in, then a worked solution for every kind of problem."
+        description="The groundwork first, then limits, the derivative, and the applications it unlocks. Each topic opens with the rules, then the order to apply them in, then a worked solution for every kind of problem."
       />
 
       <Link

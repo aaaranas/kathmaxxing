@@ -78,11 +78,13 @@ export const SUBJECTS: Subject[] = [
     name: "Calculus",
     href: "/calculus",
     icon: LineChart,
-    blurb: "Lines, functions and graphs — the groundwork underneath it all.",
+    blurb: "Limits, derivatives and where they are used — the whole of differential calculus.",
     summary:
-      "The groundwork first: lines, functions, and reading a graph off its rule. Same shape as the " +
-      "algebra shelf — the rules, the order to apply them in, then a worked solution for every kind " +
-      "of problem — with a grapher to check a sketch against.",
+      "The groundwork first — lines, functions, graphs — then limits, the derivative, and every " +
+      "rule for computing one. After that the applications: related rates, extrema, optimisation, " +
+      "indeterminate forms, and partial derivatives. Same shape throughout as the algebra shelf: " +
+      "the rules, the order to apply them in, then a worked solution for every kind of problem, " +
+      "with a grapher to check a sketch against.",
     topics: [
       ...CALCULUS_LESSONS.map((lesson) => ({
         title: lesson.title,
